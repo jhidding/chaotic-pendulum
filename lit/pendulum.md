@@ -25,9 +25,11 @@ Having $\dot{\vec{p}} = - \partial_q \mathcal{H}$ and $\dot{\vec{q}} = + \partia
 
 $$\begin{pmatrix}\dot{\vec{q}} \\ \dot{\vec{p}}\end{pmatrix} = \begin{pmatrix}\vec{p} / {ml^2} \\ -mgl \sin \vec{q}\end{pmatrix}.$$
 
-## Leap-frog method
+We are now going to compute the time evolution of the single pendulum using the leap-frog method.
 
-We can solve this using Leap-Frog method. We can describe this methods in terms of types in code. We deal with `Scalar`s and `Vector`s, for some an arbitrary distinction: a `Scalar` is a `Vector` for which we can guarantee the dimension is always 1.
+# Leap-frog method
+
+We can describe this methods in terms of types in code. Later on, we will deal with systems of more than one dimension. To deal with this I assume the position and momentum vectors are stored in some `Applicative` data structure. By doing this, I can write down the leap-frog integrator in generic terms. For the one-dimensional single pendulum, I have to wrap the `Number` into an `Applicative` which I call `Scalar`.
 
 ``` {.pure #leap-frog}
 newtype Scalar a = Scalar a
@@ -42,7 +44,7 @@ instance scalarApplicative :: Applicative Scalar where
     pure a = Scalar a
 ```
 
-We can describe the `State` of a system by giving `time`, `position` and `momentum`.
+We can describe the `State` of a system by giving `time`, `position` and `momentum`. Here `a` is the type-parameter that indicates the container type. For instance, the `position` member of a `State Scalar` will have type `Scalar Number`.
 
 ``` {.pure #leap-frog}
 type State a =
@@ -58,6 +60,8 @@ type HamiltonianSystem a =
     { positionEquation :: State a -> a Number
     , momentumEquation :: State a -> a Number }
 ```
+
+And in general, a `Solver` for the Hamiltonian system takes a state object and returns a new state.
 
 ``` {.pure #leap-frog}
 type Solver a = HamiltonianSystem a -> State a -> State a
@@ -85,6 +89,8 @@ drift dt system state = state
                <*> system.positionEquation state }
 ```
 
+Note that, for instance in the `drift` function, the operators `<$>` and `<*>` are our way of applying the lambda-function `(\q dq -> q + dt * dq)` to the `position` member of the state and the change in position given by the governing system of equations of motion. The `<$>` operator takes a function (of two arguments) and an applicative, call it a vector, and creates a vector of functions of one argument. Then the `<*>` operator applies the vector of functions to another vector of numbers. This way we can apply a function of $n$ arguments, point-wise to $n$ vectors, as long as these vectors are an instance of `Applicative`.
+
 We add a *wait* phase to control the clock, in case we encounter time-dependent systems, and because we move the clock by `dt/2` after each *kick* or *drift*, which is specific to the leap-frog method.
 
 ``` {.pure #leap-frog}
@@ -93,7 +99,7 @@ wait dt state = state
     { time = state.time + dt }
 ```
 
-The leap-frog method follows a kick by a drift, with a separation of $dt/2$.
+The leap-frog method follows a kick by a drift, with a separation of $dt/2$. We choose to start with a kick, then wait, drift, and wait again.
 
 ``` {.pure #leap-frog}
 leapFrog :: forall f. (Applicative f)

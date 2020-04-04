@@ -88,11 +88,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <!--<nav id="TOC">
 <a id="logo-container" href="#" class="brand-logo">Chaotic pendulum</a>
 <ul>
-<li><a href="#the-pendulum">The pendulum</a><ul>
+<li><a href="#the-pendulum">The pendulum</a></li>
 <li><a href="#leap-frog-method">Leap-frog method</a><ul>
 <li><a href="#halting-condition">Halting condition</a></li>
 <li><a href="#integration">Integration</a></li>
-</ul></li>
 <li><a href="#integrating-the-solid-pendulum">Integrating the solid pendulum</a></li>
 </ul></li>
 <li><a href="#the-double-pendulum">The double pendulum</a></li>
@@ -121,8 +120,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><span class="math display">\[\mathcal{H} = \frac{\vec{p}^2}{2ml^2} - mgl \cos \vec{q}.\]</span></p>
 <p>Having <span class="math inline">\(\dot{\vec{p}} = - \partial_q \mathcal{H}\)</span> and <span class="math inline">\(\dot{\vec{q}} = + \partial_p \mathcal{H}\)</span>.</p>
 <p><span class="math display">\[\begin{pmatrix}\dot{\vec{q}} \\ \dot{\vec{p}}\end{pmatrix} = \begin{pmatrix}\vec{p} / {ml^2} \\ -mgl \sin \vec{q}\end{pmatrix}.\]</span></p>
-<h2 id="leap-frog-method">Leap-frog method</h2>
-<p>We can solve this using Leap-Frog method. We can describe this methods in terms of types in code. We deal with <code>Scalar</code>s and <code>Vector</code>s, for some an arbitrary distinction: a <code>Scalar</code> is a <code>Vector</code> for which we can guarantee the dimension is always 1.</p>
+<p>We are now going to compute the time evolution of the single pendulum using the leap-frog method.</p>
+<h1 id="leap-frog-method">Leap-frog method</h1>
+<p>We can describe this methods in terms of types in code. Later on, we will deal with systems of more than one dimension. To deal with this I assume the position and momentum vectors are stored in some <code>Applicative</code> data structure. By doing this, I can write down the leap-frog integrator in generic terms. For the one-dimensional single pendulum, I have to wrap the <code>Number</code> into an <code>Applicative</code> which I call <code>Scalar</code>.</p>
 <div class="annotated-code">
 <p><span><em>«leap-frog»=</em></span></p>
 <div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1">newtype <span class="dt">Scalar</span> a <span class="fu">=</span> <span class="dt">Scalar</span> a</a>
@@ -136,7 +136,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="leap-frog-9" title="9">instance <span class="ot">scalarApplicative </span><span class="fu">::</span> <span class="dt">Applicative</span> <span class="dt">Scalar</span> where</a>
 <a class="sourceLine" id="leap-frog-10" title="10">    pure a <span class="fu">=</span> <span class="dt">Scalar</span> a</a></code></pre></div>
 </div>
-<p>We can describe the <code>State</code> of a system by giving <code>time</code>, <code>position</code> and <code>momentum</code>.</p>
+<p>We can describe the <code>State</code> of a system by giving <code>time</code>, <code>position</code> and <code>momentum</code>. Here <code>a</code> is the type-parameter that indicates the container type. For instance, the <code>position</code> member of a <code>State Scalar</code> will have type <code>Scalar Number</code>.</p>
 <div class="annotated-code">
 <p><span><em>«leap-frog»+</em></span></p>
 <div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="kw">type</span> <span class="dt">State</span> a <span class="fu">=</span></a>
@@ -151,6 +151,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="leap-frog-2" title="2">    { <span class="ot">positionEquation </span><span class="fu">::</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> a <span class="dt">Number</span></a>
 <a class="sourceLine" id="leap-frog-3" title="3">    , <span class="ot">momentumEquation </span><span class="fu">::</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> a <span class="dt">Number</span> }</a></code></pre></div>
 </div>
+<p>And in general, a <code>Solver</code> for the Hamiltonian system takes a state object and returns a new state.</p>
 <div class="annotated-code">
 <p><span><em>«leap-frog»+</em></span></p>
 <div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="kw">type</span> <span class="dt">Solver</span> a <span class="fu">=</span> <span class="dt">HamiltonianSystem</span> a <span class="fu">-&gt;</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> <span class="dt">State</span> a</a></code></pre></div>
@@ -175,6 +176,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="leap-frog-5" title="5">               <span class="fu">&lt;$&gt;</span> state<span class="fu">.</span>position</a>
 <a class="sourceLine" id="leap-frog-6" title="6">               <span class="fu">&lt;*&gt;</span> system<span class="fu">.</span>positionEquation state }</a></code></pre></div>
 </div>
+<p>Note that, for instance in the <code>drift</code> function, the operators <code>&lt;$&gt;</code> and <code>&lt;*&gt;</code> are our way of applying the lambda-function <code>(\q dq -&gt; q + dt * dq)</code> to the <code>position</code> member of the state and the change in position given by the governing system of equations of motion. The <code>&lt;$&gt;</code> operator takes a function (of two arguments) and an applicative, call it a vector, and creates a vector of functions of one argument. Then the <code>&lt;*&gt;</code> operator applies the vector of functions to another vector of numbers. This way we can apply a function of <span class="math inline">\(n\)</span> arguments, point-wise to <span class="math inline">\(n\)</span> vectors, as long as these vectors are an instance of <code>Applicative</code>.</p>
 <p>We add a <em>wait</em> phase to control the clock, in case we encounter time-dependent systems, and because we move the clock by <code>dt/2</code> after each <em>kick</em> or <em>drift</em>, which is specific to the leap-frog method.</p>
 <div class="annotated-code">
 <p><span><em>«leap-frog»+</em></span></p>
@@ -182,7 +184,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="leap-frog-2" title="2">wait dt state <span class="fu">=</span> state</a>
 <a class="sourceLine" id="leap-frog-3" title="3">    { time <span class="fu">=</span> state<span class="fu">.</span>time <span class="fu">+</span> dt }</a></code></pre></div>
 </div>
-<p>The leap-frog method follows a kick by a drift, with a separation of <span class="math inline">\(dt/2\)</span>.</p>
+<p>The leap-frog method follows a kick by a drift, with a separation of <span class="math inline">\(dt/2\)</span>. We choose to start with a kick, then wait, drift, and wait again.</p>
 <div class="annotated-code">
 <p><span><em>«leap-frog»+</em></span></p>
 <div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="ot">leapFrog </span><span class="fu">::</span> forall f<span class="fu">.</span> (<span class="dt">Applicative</span> f)</a>

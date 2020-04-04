@@ -1,4 +1,4 @@
--- ------ language="PureScript" file="src/Pendulum.purs" project://lit/pendulum.md#168
+-- ------ language="PureScript" file="src/Pendulum.purs" project://lit/pendulum.md#174
 module Pendulum where
 
 import Prelude
@@ -9,7 +9,7 @@ import Math (pow, sin)
 import Hamilton (HamiltonianSystem, Scalar (..), State, leapFrog, integrateSystem, haltAtTime)
 import Plotting (lineChart, PlotData)
 
--- ------ begin <<pendulum-model>>[0] project://lit/pendulum.md#138
+-- ------ begin <<pendulum-model>>[0] project://lit/pendulum.md#144
 simplePendulum :: Number -> Number -> HamiltonianSystem Scalar
 simplePendulum g l =
     { positionEquation: (\s -> (\p -> p / pow l 2.0) <$> s.momentum)
