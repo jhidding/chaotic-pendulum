@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Johan Hidding" />
+  <title>Chaotic pendulum</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="css/bootstrap.css" />
+  <link rel="stylesheet" href="css/mods.css" />
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+
+<!--<nav id="TOC">
+<a id="logo-container" href="#" class="brand-logo">Chaotic pendulum</a>
+<ul>
+<li><a href="#the-pendulum">The pendulum</a><ul>
+<li><a href="#leap-frog-method">Leap-frog method</a><ul>
+<li><a href="#halting-condition">Halting condition</a></li>
+<li><a href="#integration">Integration</a></li>
+</ul></li>
+<li><a href="#integrating-the-solid-pendulum">Integrating the solid pendulum</a></li>
+</ul></li>
+<li><a href="#the-double-pendulum">The double pendulum</a></li>
+</ul>
+<a href="#" data-target="nav-mobile" class="sidenav-trigger">
+<i class="material-icons">menu</i>
+</a>
+</nav>
+ -->
+
+<nav class="navbar navbar-dark navbar-expand-md bg-dark mb-4">
+<a href="#" class="navbar-brand">Chaotic pendulum</a>
+<!--<p class="author">Johan Hidding</p>
+-->
+</nav>
+
+<main role="main" class="container"><div class="container">
+<p><span class="math inline">\(\renewcommand{\vec}[1]{{\bf #1}}\)</span></p>
+<h1 id="the-pendulum">The pendulum</h1>
+<p>The pendulum still makes the world tick:</p>
+<p><span class="math display">\[\mathcal{L}(t; \theta, \dot{\theta}) = \frac{1}{2}ml^2\dot{\theta}^2 + mgl \cos\theta.\]</span></p>
+<p>Using the Euler-Lagrange equations, in very terse notation <span class="math inline">\(D_t \partial_{\dot{\theta}} \mathcal{L} = \partial_{\theta} \mathcal{L}\)</span>, leads to</p>
+<p><span class="math display">\[\ddot{\theta} = -\frac{g}{l} \sin\theta.\]</span></p>
+<p>To solve this, we write down the equation in phase-space using position <span class="math inline">\(\vec{q}(t) = \theta(t)\)</span> and momentum <span class="math inline">\(\vec{p}(t) = D_{\dot{\theta}} \mathcal{L} = ml^2\dot{\theta}(t)\)</span>.</p>
+<p>And the Hamiltonian becomes</p>
+<p><span class="math display">\[\mathcal{H} = \frac{\vec{p}^2}{2ml^2} - mgl \cos \vec{q}.\]</span></p>
+<p>Having <span class="math inline">\(\dot{\vec{p}} = - \partial_q \mathcal{H}\)</span> and <span class="math inline">\(\dot{\vec{q}} = + \partial_p \mathcal{H}\)</span>.</p>
+<p><span class="math display">\[\begin{pmatrix}\dot{\vec{q}} \\ \dot{\vec{p}}\end{pmatrix} = \begin{pmatrix}\vec{p} / {ml^2} \\ -mgl \sin \vec{q}\end{pmatrix}.\]</span></p>
+<h2 id="leap-frog-method">Leap-frog method</h2>
+<p>We can solve this using Leap-Frog method. We can describe this methods in terms of types in code. We deal with <code>Scalar</code>s and <code>Vector</code>s, for some an arbitrary distinction: a <code>Scalar</code> is a <code>Vector</code> for which we can guarantee the dimension is always 1.</p>
+<div class="annotated-code">
+<p><span><em>«leap-frog»=</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1">newtype <span class="dt">Scalar</span> a <span class="fu">=</span> <span class="dt">Scalar</span> a</a>
+<a class="sourceLine" id="leap-frog-2" title="2"></a>
+<a class="sourceLine" id="leap-frog-3" title="3">instance <span class="ot">scalarFunctor </span><span class="fu">::</span> <span class="dt">Functor</span> <span class="dt">Scalar</span> where</a>
+<a class="sourceLine" id="leap-frog-4" title="4">    map f (<span class="dt">Scalar</span> a) <span class="fu">=</span> <span class="dt">Scalar</span> (f a)</a>
+<a class="sourceLine" id="leap-frog-5" title="5"></a>
+<a class="sourceLine" id="leap-frog-6" title="6">instance <span class="ot">scalarApply </span><span class="fu">::</span> <span class="dt">Apply</span> <span class="dt">Scalar</span> where</a>
+<a class="sourceLine" id="leap-frog-7" title="7">    apply (<span class="dt">Scalar</span> f) (<span class="dt">Scalar</span> a) <span class="fu">=</span> <span class="dt">Scalar</span> (f a)</a>
+<a class="sourceLine" id="leap-frog-8" title="8"></a>
+<a class="sourceLine" id="leap-frog-9" title="9">instance <span class="ot">scalarApplicative </span><span class="fu">::</span> <span class="dt">Applicative</span> <span class="dt">Scalar</span> where</a>
+<a class="sourceLine" id="leap-frog-10" title="10">    pure a <span class="fu">=</span> <span class="dt">Scalar</span> a</a></code></pre></div>
+</div>
+<p>We can describe the <code>State</code> of a system by giving <code>time</code>, <code>position</code> and <code>momentum</code>.</p>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="kw">type</span> <span class="dt">State</span> a <span class="fu">=</span></a>
+<a class="sourceLine" id="leap-frog-2" title="2">    { <span class="ot">time </span><span class="fu">::</span> <span class="dt">Number</span></a>
+<a class="sourceLine" id="leap-frog-3" title="3">    , <span class="ot">position </span><span class="fu">::</span> a <span class="dt">Number</span></a>
+<a class="sourceLine" id="leap-frog-4" title="4">    , <span class="ot">momentum </span><span class="fu">::</span> a <span class="dt">Number</span> }</a></code></pre></div>
+</div>
+<p>Then, a Hamiltonian system is given by two sets of first-order differential equations.</p>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="kw">type</span> <span class="dt">HamiltonianSystem</span> a <span class="fu">=</span></a>
+<a class="sourceLine" id="leap-frog-2" title="2">    { <span class="ot">positionEquation </span><span class="fu">::</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> a <span class="dt">Number</span></a>
+<a class="sourceLine" id="leap-frog-3" title="3">    , <span class="ot">momentumEquation </span><span class="fu">::</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> a <span class="dt">Number</span> }</a></code></pre></div>
+</div>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="kw">type</span> <span class="dt">Solver</span> a <span class="fu">=</span> <span class="dt">HamiltonianSystem</span> a <span class="fu">-&gt;</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> <span class="dt">State</span> a</a></code></pre></div>
+</div>
+<p>The leap-frog method is a solver that uses a <em>kick</em> and <em>drift</em> phase. The <em>kick</em> phase integrates only the momentum part of the system,</p>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="ot">kick </span><span class="fu">::</span> forall f<span class="fu">.</span> (<span class="dt">Applicative</span> f) </a>
+<a class="sourceLine" id="leap-frog-2" title="2">    <span class="fu">=&gt;</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">HamiltonianSystem</span> f <span class="fu">-&gt;</span> <span class="dt">State</span> f <span class="fu">-&gt;</span> <span class="dt">State</span> f</a>
+<a class="sourceLine" id="leap-frog-3" title="3">kick dt system state <span class="fu">=</span> state</a>
+<a class="sourceLine" id="leap-frog-4" title="4">    { momentum <span class="fu">=</span> (\p dp <span class="fu">-&gt;</span> p <span class="fu">+</span> dt <span class="fu">*</span> dp)</a>
+<a class="sourceLine" id="leap-frog-5" title="5">               <span class="fu">&lt;$&gt;</span> state<span class="fu">.</span>momentum</a>
+<a class="sourceLine" id="leap-frog-6" title="6">               <span class="fu">&lt;*&gt;</span> system<span class="fu">.</span>momentumEquation state }</a></code></pre></div>
+</div>
+<p>while the <em>drift</em> phase only integrates the position part.</p>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="ot">drift </span><span class="fu">::</span> forall f<span class="fu">.</span> (<span class="dt">Applicative</span> f)</a>
+<a class="sourceLine" id="leap-frog-2" title="2">    <span class="fu">=&gt;</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">HamiltonianSystem</span> f <span class="fu">-&gt;</span> <span class="dt">State</span> f <span class="fu">-&gt;</span> <span class="dt">State</span> f</a>
+<a class="sourceLine" id="leap-frog-3" title="3">drift dt system state <span class="fu">=</span> state</a>
+<a class="sourceLine" id="leap-frog-4" title="4">    { position <span class="fu">=</span> (\q dq <span class="fu">-&gt;</span> q <span class="fu">+</span> dt <span class="fu">*</span> dq)</a>
+<a class="sourceLine" id="leap-frog-5" title="5">               <span class="fu">&lt;$&gt;</span> state<span class="fu">.</span>position</a>
+<a class="sourceLine" id="leap-frog-6" title="6">               <span class="fu">&lt;*&gt;</span> system<span class="fu">.</span>positionEquation state }</a></code></pre></div>
+</div>
+<p>We add a <em>wait</em> phase to control the clock, in case we encounter time-dependent systems, and because we move the clock by <code>dt/2</code> after each <em>kick</em> or <em>drift</em>, which is specific to the leap-frog method.</p>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="ot">wait </span><span class="fu">::</span> forall a<span class="fu">.</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> <span class="dt">State</span> a</a>
+<a class="sourceLine" id="leap-frog-2" title="2">wait dt state <span class="fu">=</span> state</a>
+<a class="sourceLine" id="leap-frog-3" title="3">    { time <span class="fu">=</span> state<span class="fu">.</span>time <span class="fu">+</span> dt }</a></code></pre></div>
+</div>
+<p>The leap-frog method follows a kick by a drift, with a separation of <span class="math inline">\(dt/2\)</span>.</p>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="ot">leapFrog </span><span class="fu">::</span> forall f<span class="fu">.</span> (<span class="dt">Applicative</span> f)</a>
+<a class="sourceLine" id="leap-frog-2" title="2">    <span class="fu">=&gt;</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">HamiltonianSystem</span> f <span class="fu">-&gt;</span> <span class="dt">State</span> f <span class="fu">-&gt;</span> <span class="dt">State</span> f</a>
+<a class="sourceLine" id="leap-frog-3" title="3">leapFrog dt s <span class="fu">=</span> kick dt s <span class="fu">&gt;&gt;&gt;</span> wait (dt<span class="fu">/</span><span class="dv">2.0</span>) <span class="fu">&gt;&gt;&gt;</span> drift dt s <span class="fu">&gt;&gt;&gt;</span> wait (dt<span class="fu">/</span><span class="dv">2.0</span>)</a></code></pre></div>
+</div>
+<h3 id="halting-condition">Halting condition</h3>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="kw">type</span> <span class="dt">HaltingCondition</span> a <span class="fu">=</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> <span class="dt">Boolean</span></a>
+<a class="sourceLine" id="leap-frog-2" title="2"></a>
+<a class="sourceLine" id="leap-frog-3" title="3"><span class="ot">haltAtTime </span><span class="fu">::</span> forall a<span class="fu">.</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">HaltingCondition</span> a</a>
+<a class="sourceLine" id="leap-frog-4" title="4">haltAtTime t s1 s2 <span class="fu">=</span> s2<span class="fu">.</span>time <span class="fu">&gt;=</span> t </a></code></pre></div>
+</div>
+<h3 id="integration">Integration</h3>
+<div class="annotated-code">
+<p><span><em>«leap-frog»+</em></span></p>
+<div class="sourceCode" id="leap-frog"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="leap-frog-1" title="1"><span class="ot">integrateSystem </span><span class="fu">::</span> forall a<span class="fu">.</span></a>
+<a class="sourceLine" id="leap-frog-2" title="2">    <span class="dt">Solver</span> a <span class="fu">-&gt;</span> <span class="dt">HaltingCondition</span> a <span class="fu">-&gt;</span> <span class="dt">HamiltonianSystem</span> a <span class="fu">-&gt;</span> <span class="dt">State</span> a <span class="fu">-&gt;</span> <span class="dt">Array</span> (<span class="dt">State</span> a)</a>
+<a class="sourceLine" id="leap-frog-3" title="3">integrateSystem solve halt f ic <span class="fu">=</span></a>
+<a class="sourceLine" id="leap-frog-4" title="4">    <span class="kw">let</span> next <span class="fu">=</span> solve f ic</a>
+<a class="sourceLine" id="leap-frog-5" title="5">    in <span class="kw">if</span> halt ic next</a>
+<a class="sourceLine" id="leap-frog-6" title="6">        <span class="kw">then</span> ic <span class="fu">:</span> [next] <span class="fu">::</span> <span class="dt">Array</span> (<span class="dt">State</span> a)</a>
+<a class="sourceLine" id="leap-frog-7" title="7">        <span class="kw">else</span> ic <span class="fu">:</span> integrateSystem solve halt f next</a></code></pre></div>
+</div>
+<div class="annotated-code">
+<p><span><em>«src/Hamilton.purs»=</em></span></p>
+<div class="sourceCode" id="cb1" data-file="src/Hamilton.purs"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="cb1-1" title="1">module <span class="dt">Hamilton</span> where</a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3">import <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb1-4" title="4">import <span class="dt">Data.Array</span> ((<span class="fu">:</span>))</a>
+<a class="sourceLine" id="cb1-5" title="5"></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="fu">&lt;&lt;</span>leap<span class="fu">-</span>frog<span class="fu">&gt;&gt;</span></a></code></pre></div>
+</div>
+<h2 id="integrating-the-solid-pendulum">Integrating the solid pendulum</h2>
+<div class="annotated-code">
+<p><span><em>«pendulum-model»=</em></span></p>
+<div class="sourceCode" id="pendulum-model"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="pendulum-model-1" title="1"><span class="ot">simplePendulum </span><span class="fu">::</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">HamiltonianSystem</span> <span class="dt">Scalar</span></a>
+<a class="sourceLine" id="pendulum-model-2" title="2">simplePendulum g l <span class="fu">=</span></a>
+<a class="sourceLine" id="pendulum-model-3" title="3">    { positionEquation<span class="fu">:</span> (\s <span class="fu">-&gt;</span> (\p <span class="fu">-&gt;</span> p <span class="fu">/</span> pow l <span class="dv">2.0</span>) <span class="fu">&lt;$&gt;</span> s<span class="fu">.</span>momentum)</a>
+<a class="sourceLine" id="pendulum-model-4" title="4">    , momentumEquation<span class="fu">:</span> (\s <span class="fu">-&gt;</span> (\q <span class="fu">-&gt;</span> <span class="fu">-</span>g <span class="fu">*</span> l <span class="fu">*</span> (sin q)) <span class="fu">&lt;$&gt;</span> s<span class="fu">.</span>position)</a>
+<a class="sourceLine" id="pendulum-model-5" title="5">    }</a>
+<a class="sourceLine" id="pendulum-model-6" title="6"></a>
+<a class="sourceLine" id="pendulum-model-7" title="7"><span class="ot">convertResult </span><span class="fu">::</span> <span class="dt">Array</span> (<span class="dt">State</span> <span class="dt">Scalar</span>) <span class="fu">-&gt;</span> <span class="dt">PlotData</span></a>
+<a class="sourceLine" id="pendulum-model-8" title="8">convertResult rs <span class="fu">=</span></a>
+<a class="sourceLine" id="pendulum-model-9" title="9">    { x<span class="fu">:</span> map _<span class="fu">.</span>time rs</a>
+<a class="sourceLine" id="pendulum-model-10" title="10">    , y<span class="fu">:</span> map (\{position<span class="fu">:</span> <span class="dt">Scalar</span> q} <span class="fu">-&gt;</span> q) rs</a>
+<a class="sourceLine" id="pendulum-model-11" title="11">    , mode<span class="fu">:</span> <span class="st">&quot;lines+markers&quot;</span> }</a>
+<a class="sourceLine" id="pendulum-model-12" title="12"></a>
+<a class="sourceLine" id="pendulum-model-13" title="13"><span class="ot">main </span><span class="fu">::</span> <span class="dt">Effect</span> <span class="dt">Unit</span></a>
+<a class="sourceLine" id="pendulum-model-14" title="14">main <span class="fu">=</span> do</a>
+<a class="sourceLine" id="pendulum-model-15" title="15">    <span class="kw">let</span> result <span class="fu">=</span> integrateSystem (leapFrog <span class="dv">0.1</span>) (haltAtTime <span class="dv">10.0</span>)</a>
+<a class="sourceLine" id="pendulum-model-16" title="16">                                 (simplePendulum <span class="dv">9.81</span> <span class="dv">1.0</span>)</a>
+<a class="sourceLine" id="pendulum-model-17" title="17">                                 { time<span class="fu">:</span> <span class="dv">0.0</span>, position<span class="fu">:</span> <span class="dt">Scalar</span> <span class="dv">3.0</span>, momentum<span class="fu">:</span> <span class="dt">Scalar</span> <span class="dv">0.0</span> }</a>
+<a class="sourceLine" id="pendulum-model-18" title="18">    lineChart <span class="st">&quot;pendulum&quot;</span> [convertResult result] { title<span class="fu">:</span> <span class="st">&quot;pendulum&quot;</span> }</a></code></pre></div>
+</div>
+<div id="pendulum">
+
+</div>
+<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#pendulum-main" aria-controls="pendulum-main">
+&lt;&lt;pendulum-main&gt;&gt;=
+</button>
+<div id="pendulum-main" class="collapse">
+<div class="card" style="height: 20em">
+<div class="overflow-auto">
+<div class="annotated-code">
+<p><span><em>«src/Pendulum.purs»=</em></span></p>
+<div class="sourceCode" id="cb2" data-file="src/Pendulum.purs"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="cb2-1" title="1">module <span class="dt">Pendulum</span> where</a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3">import <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="fu">--</span> import <span class="dt">Data.Array</span> ((<span class="fu">:</span>))</a>
+<a class="sourceLine" id="cb2-5" title="5">import <span class="dt">Effect</span> (<span class="dt">Effect</span>)</a>
+<a class="sourceLine" id="cb2-6" title="6">import <span class="dt">Math</span> (pow, sin)</a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8">import <span class="dt">Hamilton</span> (<span class="dt">HamiltonianSystem</span>, <span class="dt">Scalar</span> (<span class="fu">..</span>), <span class="dt">State</span>, leapFrog, integrateSystem, haltAtTime)</a>
+<a class="sourceLine" id="cb2-9" title="9">import <span class="dt">Plotting</span> (lineChart, <span class="dt">PlotData</span>)</a>
+<a class="sourceLine" id="cb2-10" title="10"></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="fu">&lt;&lt;</span>pendulum<span class="fu">-</span>model<span class="fu">&gt;&gt;</span></a></code></pre></div>
+</div>
+</div>
+</div>
+</div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript" src="js/pendulum.js"></script>
+<!-- <script>
+var pendulum = document.getElementById("pendulum");
+const app = Elm.Pendulum.init({ node: pendulum });
+</script> -->
+<h1 id="the-double-pendulum">The double pendulum</h1>
+<p>The double pendulum is more complicated than the single one. We now have two angles <span class="math inline">\(\theta\)</span> and <span class="math inline">\(\varphi\)</span>, two lengths <span class="math inline">\(k\)</span> and <span class="math inline">\(l\)</span>, and two masses <span class="math inline">\(m\)</span> and <span class="math inline">\(n\)</span>. The potential energy is</p>
+<p><span class="math display">\[U(\theta, \varphi) = - m g k \cos{\theta} - n g (k \cos{\theta} + l \cos{\varphi}),\]</span></p>
+<p>and the kinetic energy (takes a bit of calculating),</p>
+<p><span class="math display">\[T(\theta, \varphi, \dot{\theta}, \dot{\varphi}) = \frac{1}{2} m k^2 \dot{\theta}^2 + \frac{1}{2} n \left(\dot{\theta}^2 k^2 + \dot{\varphi}^2 l^2 + 2\dot{\theta}\dot{\varphi}kl \cos(\theta - \varphi)\right).\]</span></p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum»=</em></span></p>
+<div class="sourceCode" id="double-pendulum"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-1" title="1"><span class="kw">type</span> alias <span class="dt">DoublePendulum</span> <span class="fu">=</span></a>
+<a class="sourceLine" id="double-pendulum-2" title="2">        { l1 <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="double-pendulum-3" title="3">        , m1 <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="double-pendulum-4" title="4">        , l2 <span class="fu">:</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="double-pendulum-5" title="5">        , m2 <span class="fu">:</span> <span class="dt">Float</span> }</a></code></pre></div>
+</div>
+<p>We choose the position vector <span class="math inline">\(\vec{q} = (\theta, \varphi)\)</span>, then the canonical momentum is <span class="math inline">\(\vec{p} = \partial_{\dot{\vec{q}}} \mathcal{L}\)</span>. This gives the terrible momentum vector,</p>
+<p><span class="math display">\[\vec{p} = \begin{pmatrix}
+mk^2\dot{\theta} + nk^2\dot{\theta} + nkl \dot{\varphi} \cos(\theta - \varphi)\\
+nl^2\dot{\varphi} + nkl \dot{\theta} \cos(\theta - \varphi)
+\end{pmatrix}.\]</span></p>
+<p>We need to write the Hamiltonian <span class="math inline">\(\mathcal{H}\)</span> in terms of <span class="math inline">\(\vec{q}\)</span> and <span class="math inline">\(\vec{p}\)</span>. This is possible. I stole and rewrote this derivation from <a href="https://diego.assencio.com/?index=e5ac36fcb129ce95a61f8e8ce0572dbf">Diego Assencio’s blog</a>.</p>
+<p>We can rewrite our expression for <span class="math inline">\(\vec{p}\)</span> in a matrix-vector form,</p>
+<p><span class="math display">\[\vec{p} = B \dot{\vec{q}},\]</span></p>
+<p>where</p>
+<p><span class="math display">\[B = \begin{pmatrix}
+(m + n)k^2 &amp;&amp; nkl \cos(\theta - \varphi)\\ nkl \cos(\theta - \varphi) &amp;&amp; nl^2
+\end{pmatrix}.\]</span></p>
+<p>Then we can write the velocities <span class="math inline">\(\dot{\vec{q}} = B^{-1} \vec{p}\)</span>. The inverse of a <span class="math inline">\(2\times2\)</span> symmetric matrix is given by</p>
+<p><span class="math display">\[\begin{pmatrix}
+a &amp;&amp; c \\ c &amp;&amp; b\end{pmatrix}^{-1} = \frac{1}{ab - c^2} \begin{pmatrix} b &amp;&amp; -c \\ -c &amp;&amp; a
+\end{pmatrix}.\]</span></p>
+<p>We will write <span class="math display">\[D = \det B = nk^2l^2 \left(m + n \sin^2(\theta - \varphi)\right).\]</span> From this expression for the determinant it is clear that <span class="math inline">\(D \ge nmk^2l^2\)</span>, and that the inverse <span class="math inline">\(B^{-1}\)</span> exists.</p>
+<p>Now it is helpful to write <span class="math inline">\(T(\theta, \varphi, \dot{\theta}, \dot{\varphi})\)</span> in terms of <span class="math inline">\(a, b, c\)</span> and <span class="math inline">\(d\)</span>,</p>
+<p><span class="math display">\[T = \frac{1}{2}\left(a\dot{\theta}^2 + b\dot{\varphi} + 2c\dot{\theta}\dot{\varphi}\right).\]</span></p>
+<p>Inserting <span class="math inline">\(\dot{\theta} = (p_{\theta}b - p_{\varphi}c)/D\)</span> and <span class="math inline">\(\dot{\varphi} = (p_{\varphi}a - p_{\varphi}c)/D\)</span>, things magically work out (making me feel I did too much work) and we get,</p>
+<p><span class="math display">\[T = \frac{bp_{\theta}^2 + ap_{\varphi}^2 - 2cp_{\theta}p_{\varphi}}{2D},\]</span></p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum»+</em></span></p>
+<div class="sourceCode" id="double-pendulum"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-1" title="1">kineticEnergy <span class="fu">:</span> <span class="dt">DoublePendulum</span> <span class="fu">-&gt;</span> <span class="dt">State</span> <span class="fu">-&gt;</span> <span class="dt">Float</span></a>
+<a class="sourceLine" id="double-pendulum-2" title="2">kineticEnergy a s <span class="fu">=</span> </a></code></pre></div>
+</div>
+<p>and the Hamiltonian becomes</p>
+<p><span class="math display">\[\mathcal{H} = \frac
+{nl^2 p_{\theta}^2 + (m + n)k^2 p_{\varphi}^2 - 2nkl p_{\theta} p_{\varphi} \cos(\theta - \varphi)}
+{2nk^2l^2 \left(m + n \sin^2(\theta - \varphi)\right)}
+- (m + n)gk \cos{\theta} - ngl \cos{\varphi}.\]</span></p>
+<p>Now we get the Hamilton equations of motion, <span class="math inline">\(\dot{\vec{p}} = - \partial_q \mathcal{H}\)</span> and <span class="math inline">\(\dot{\vec{q}} = + \partial_p \mathcal{H}\)</span>,</p>
+<p><span class="math display">\[\begin{align}
+\dot{\theta} = \partial_{p_{\theta}} \mathcal{H} =&amp; \frac{nl}{D} \left(l p_{\theta} - k\cos(\theta - \varphi) p_{\varphi}\right),\\
+\dot{\varphi} = \partial_{p_{\varphi}} \mathcal{H} =&amp; \frac{k}{D} \left((m+n)k p_{\varphi} - nl\cos(\theta - \varphi) p_{\theta}\right),\\
+\dot{p}_{\theta} = -\partial_{\theta} \mathcal{H} =&amp;\xi - (m+n)gk \sin \theta,\\
+\dot{p}_{\varphi} = -\partial_{\varphi} \mathcal{H} =&amp; -\xi - ngl \sin \varphi,
+\end{align}\]</span></p>
+<p>where</p>
+<p><span class="math display">\[\xi = \frac{nkl}{2D}\left(T\ nkl\sin(2(\theta - \varphi)) - 2\sin(\theta - \varphi) p_{\theta} p_{\varphi}\right).\]</span></p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum»+</em></span></p>
+<div class="sourceCode" id="double-pendulum"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-1" title="1">doublePendulum <span class="fu">:</span> <span class="dt">DoublePendulum</span> <span class="fu">-&gt;</span> <span class="dt">HamiltonianSystem</span></a>
+<a class="sourceLine" id="double-pendulum-2" title="2">doublePendulum a <span class="fu">=</span> <span class="kw">let</span> det q1 q2 <span class="fu">=</span> a<span class="fu">.</span>m2 <span class="fu">*</span> a<span class="fu">.</span>l1<span class="fu">^</span><span class="dv">2</span> <span class="fu">*</span> a<span class="fu">.</span>l2<span class="fu">^</span><span class="dv">2</span> <span class="fu">*</span> (a<span class="fu">.</span>m1 <span class="fu">+</span> a<span class="fu">.</span>m2 <span class="fu">*</span> (sin (q1 <span class="fu">-</span> q2))<span class="fu">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="double-pendulum-3" title="3">                       kinE q1 q2 p1 p2 <span class="fu">=</span> () <span class="fu">/</span> (<span class="dv">2</span> <span class="fu">*</span> (det q1 q2))</a>
+<a class="sourceLine" id="double-pendulum-4" title="4">                       xi q1 q2 p1 p2 <span class="fu">=</span> (a<span class="fu">.</span>m2 <span class="fu">*</span> a<span class="fu">.</span>l1 <span class="fu">*</span> a<span class="fu">.</span>l2 <span class="fu">/</span> (<span class="dv">2</span> <span class="fu">*</span> (det q1 q2))) <span class="fu">*</span></a>
+<a class="sourceLine" id="double-pendulum-5" title="5">                                ((kinE q1 q2 p1 p2) <span class="fu">*</span> a<span class="fu">.</span>m2 <span class="fu">*</span> a<span class="fu">.</span>l1 <span class="fu">*</span> a<span class="fu">.</span>l2 <span class="fu">*</span> (sin (<span class="dv">2</span> <span class="fu">*</span> (q1 <span class="fu">-</span> q2)))</a>
+<a class="sourceLine" id="double-pendulum-6" title="6">                                <span class="fu">-</span> <span class="dv">2</span> <span class="fu">*</span> (sin (q1 <span class="fu">-</span> q2)) <span class="fu">*</span> p1 <span class="fu">*</span> p2)</a>
+<a class="sourceLine" id="double-pendulum-7" title="7">    in { positionEquation <span class="fu">=</span> (\s <span class="fu">-&gt;</span> </a></code></pre></div>
+</div>
+</div>
+
+</main>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="js/bootstrap.js"></script>
+</body>
+</html>

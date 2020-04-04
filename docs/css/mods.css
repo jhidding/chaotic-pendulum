@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css?family=Zilla+Slab:300,400&display=swap');
+
+body {
+        font-family: 'Zilla Slab', serif;
+        font-size: 16pt;
+        font-weight: 300;
+}
+
+pre.sourceCode {
+        background: #eee;
+        border-left: thick solid #888;
+        padding: 10pt 10pt 10pt 20pt;
+        font-size: 1rem;
+}
+
