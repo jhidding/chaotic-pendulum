@@ -21,6 +21,7 @@ clean:
 watch:
 	@tmux new-session make --no-print-directory watch-pandoc \; \
 		split-window -v make --no-print-directory watch-browser-sync \; \
+		split-window -v entangled ./lit/*.md \; \
 		select-layout even-vertical \;
 
 watch-pandoc:
