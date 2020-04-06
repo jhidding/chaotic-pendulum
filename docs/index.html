@@ -82,6 +82,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
+<!-- <script data-main="scripts/main" src="js/require.js"></script> -->
+  <!-- Load React. -->
+  <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+<!--  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script> -->
+
+
 </head>
 <body>
 
@@ -226,22 +233,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="pendulum-model-2" title="2">simplePendulum g l <span class="fu">=</span></a>
 <a class="sourceLine" id="pendulum-model-3" title="3">    { positionEquation<span class="fu">:</span> (\s <span class="fu">-&gt;</span> (\p <span class="fu">-&gt;</span> p <span class="fu">/</span> pow l <span class="dv">2.0</span>) <span class="fu">&lt;$&gt;</span> s<span class="fu">.</span>momentum)</a>
 <a class="sourceLine" id="pendulum-model-4" title="4">    , momentumEquation<span class="fu">:</span> (\s <span class="fu">-&gt;</span> (\q <span class="fu">-&gt;</span> <span class="fu">-</span>g <span class="fu">*</span> l <span class="fu">*</span> (sin q)) <span class="fu">&lt;$&gt;</span> s<span class="fu">.</span>position)</a>
-<a class="sourceLine" id="pendulum-model-5" title="5">    }</a>
-<a class="sourceLine" id="pendulum-model-6" title="6"></a>
-<a class="sourceLine" id="pendulum-model-7" title="7"><span class="ot">convertResult </span><span class="fu">::</span> <span class="dt">Array</span> (<span class="dt">State</span> <span class="dt">Scalar</span>) <span class="fu">-&gt;</span> <span class="dt">PlotData</span></a>
-<a class="sourceLine" id="pendulum-model-8" title="8">convertResult rs <span class="fu">=</span></a>
-<a class="sourceLine" id="pendulum-model-9" title="9">    { x<span class="fu">:</span> map _<span class="fu">.</span>time rs</a>
-<a class="sourceLine" id="pendulum-model-10" title="10">    , y<span class="fu">:</span> map (\{position<span class="fu">:</span> <span class="dt">Scalar</span> q} <span class="fu">-&gt;</span> q) rs</a>
-<a class="sourceLine" id="pendulum-model-11" title="11">    , mode<span class="fu">:</span> <span class="st">&quot;lines+markers&quot;</span> }</a>
-<a class="sourceLine" id="pendulum-model-12" title="12"></a>
-<a class="sourceLine" id="pendulum-model-13" title="13"><span class="ot">main </span><span class="fu">::</span> <span class="dt">Effect</span> <span class="dt">Unit</span></a>
-<a class="sourceLine" id="pendulum-model-14" title="14">main <span class="fu">=</span> do</a>
-<a class="sourceLine" id="pendulum-model-15" title="15">    <span class="kw">let</span> result <span class="fu">=</span> integrateSystem (leapFrog <span class="dv">0.1</span>) (haltAtTime <span class="dv">10.0</span>)</a>
-<a class="sourceLine" id="pendulum-model-16" title="16">                                 (simplePendulum <span class="dv">9.81</span> <span class="dv">1.0</span>)</a>
-<a class="sourceLine" id="pendulum-model-17" title="17">                                 { time<span class="fu">:</span> <span class="dv">0.0</span>, position<span class="fu">:</span> <span class="dt">Scalar</span> <span class="dv">3.0</span>, momentum<span class="fu">:</span> <span class="dt">Scalar</span> <span class="dv">0.0</span> }</a>
-<a class="sourceLine" id="pendulum-model-18" title="18">    lineChart <span class="st">&quot;pendulum&quot;</span> [convertResult result] { title<span class="fu">:</span> <span class="st">&quot;pendulum&quot;</span> }</a></code></pre></div>
+<a class="sourceLine" id="pendulum-model-5" title="5">    }</a></code></pre></div>
 </div>
-<div id="pendulum">
+<div id="pendulum-plot">
+
+</div>
+<div id="pendulum-control">
 
 </div>
 <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#pendulum-main" aria-controls="pendulum-main">
@@ -255,14 +252,49 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb2" data-file="src/Pendulum.purs"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="cb2-1" title="1">module <span class="dt">Pendulum</span> where</a>
 <a class="sourceLine" id="cb2-2" title="2"></a>
 <a class="sourceLine" id="cb2-3" title="3">import <span class="dt">Prelude</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="fu">--</span> import <span class="dt">Data.Array</span> ((<span class="fu">:</span>))</a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
 <a class="sourceLine" id="cb2-5" title="5">import <span class="dt">Effect</span> (<span class="dt">Effect</span>)</a>
 <a class="sourceLine" id="cb2-6" title="6">import <span class="dt">Math</span> (pow, sin)</a>
 <a class="sourceLine" id="cb2-7" title="7"></a>
 <a class="sourceLine" id="cb2-8" title="8">import <span class="dt">Hamilton</span> (<span class="dt">HamiltonianSystem</span>, <span class="dt">Scalar</span> (<span class="fu">..</span>), <span class="dt">State</span>, leapFrog, integrateSystem, haltAtTime)</a>
-<a class="sourceLine" id="cb2-9" title="9">import <span class="dt">Plotting</span> (lineChart, <span class="dt">PlotData</span>)</a>
+<a class="sourceLine" id="cb2-9" title="9">import <span class="dt">Plotting</span> as <span class="dt">Plotting</span></a>
 <a class="sourceLine" id="cb2-10" title="10"></a>
-<a class="sourceLine" id="cb2-11" title="11"><span class="fu">&lt;&lt;</span>pendulum<span class="fu">-</span>model<span class="fu">&gt;&gt;</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-11" title="11">import <span class="dt">Flare</span></a>
+<a class="sourceLine" id="cb2-12" title="12"></a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="fu">&lt;&lt;</span>pendulum<span class="fu">-</span>model<span class="fu">&gt;&gt;</span></a>
+<a class="sourceLine" id="cb2-14" title="14"></a>
+<a class="sourceLine" id="cb2-15" title="15"><span class="kw">type</span> <span class="dt">Model</span> <span class="fu">=</span></a>
+<a class="sourceLine" id="cb2-16" title="16">        { <span class="ot">initAngle </span><span class="fu">::</span> <span class="dt">Number</span></a>
+<a class="sourceLine" id="cb2-17" title="17">        , <span class="ot">dt </span><span class="fu">::</span> <span class="dt">Number</span></a>
+<a class="sourceLine" id="cb2-18" title="18">        , <span class="ot">tEnd </span><span class="fu">::</span> <span class="dt">Number</span></a>
+<a class="sourceLine" id="cb2-19" title="19">        , <span class="ot">length </span><span class="fu">::</span> <span class="dt">Number</span> }</a>
+<a class="sourceLine" id="cb2-20" title="20"></a>
+<a class="sourceLine" id="cb2-21" title="21"><span class="ot">updatePlot </span><span class="fu">::</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">Effect</span> <span class="dt">Unit</span></a>
+<a class="sourceLine" id="cb2-22" title="22">updatePlot iq <span class="fu">=</span> do</a>
+<a class="sourceLine" id="cb2-23" title="23">    <span class="kw">let</span> m <span class="fu">=</span> initModel { initAngle <span class="fu">=</span> iq }</a>
+<a class="sourceLine" id="cb2-24" title="24">        result <span class="fu">=</span> integrateSystem (leapFrog m<span class="fu">.</span>dt) (haltAtTime m<span class="fu">.</span>tEnd)</a>
+<a class="sourceLine" id="cb2-25" title="25">                                 (simplePendulum <span class="dv">9.81</span> m<span class="fu">.</span>length)</a>
+<a class="sourceLine" id="cb2-26" title="26">                                 { time<span class="fu">:</span> <span class="dv">0.0</span>, position<span class="fu">:</span> <span class="dt">Scalar</span> m<span class="fu">.</span>initAngle, momentum<span class="fu">:</span> <span class="dt">Scalar</span> <span class="dv">0.0</span> }</a>
+<a class="sourceLine" id="cb2-27" title="27">    <span class="dt">Plotting</span><span class="fu">.</span>restyle <span class="st">&quot;pendulum-plot&quot;</span> <span class="st">&quot;y&quot;</span> [map (\{position<span class="fu">:</span> <span class="dt">Scalar</span> q} <span class="fu">-&gt;</span> q) result]</a>
+<a class="sourceLine" id="cb2-28" title="28"></a>
+<a class="sourceLine" id="cb2-29" title="29"><span class="ot">initModel </span><span class="fu">::</span> <span class="dt">Model</span></a>
+<a class="sourceLine" id="cb2-30" title="30">initModel <span class="fu">=</span> { initAngle<span class="fu">:</span> <span class="dv">3.0</span>, dt<span class="fu">:</span> <span class="dv">0.1</span>, tEnd<span class="fu">:</span> <span class="dv">10.0</span>, length<span class="fu">:</span> <span class="dv">1.0</span> }</a>
+<a class="sourceLine" id="cb2-31" title="31"></a>
+<a class="sourceLine" id="cb2-32" title="32"><span class="ot">convertResult </span><span class="fu">::</span> <span class="dt">Array</span> (<span class="dt">State</span> <span class="dt">Scalar</span>) <span class="fu">-&gt;</span> <span class="dt">Plotting.PlotData</span></a>
+<a class="sourceLine" id="cb2-33" title="33">convertResult rs <span class="fu">=</span></a>
+<a class="sourceLine" id="cb2-34" title="34">    { x<span class="fu">:</span> map _<span class="fu">.</span>time rs</a>
+<a class="sourceLine" id="cb2-35" title="35">    , y<span class="fu">:</span> map (\{position<span class="fu">:</span> <span class="dt">Scalar</span> q} <span class="fu">-&gt;</span> q) rs</a>
+<a class="sourceLine" id="cb2-36" title="36">    , mode<span class="fu">:</span> <span class="st">&quot;lines+markers&quot;</span> }</a>
+<a class="sourceLine" id="cb2-37" title="37"></a>
+<a class="sourceLine" id="cb2-38" title="38"><span class="ot">main </span><span class="fu">::</span> <span class="dt">Effect</span> <span class="dt">Unit</span></a>
+<a class="sourceLine" id="cb2-39" title="39">main <span class="fu">=</span> do</a>
+<a class="sourceLine" id="cb2-40" title="40">    <span class="kw">let</span> result <span class="fu">=</span> integrateSystem (leapFrog <span class="dv">0.1</span>) (haltAtTime <span class="dv">10.0</span>)</a>
+<a class="sourceLine" id="cb2-41" title="41">                                 (simplePendulum <span class="dv">9.81</span> <span class="dv">1.0</span>)</a>
+<a class="sourceLine" id="cb2-42" title="42">                                 { time<span class="fu">:</span> <span class="dv">0.0</span>, position<span class="fu">:</span> <span class="dt">Scalar</span> <span class="dv">3.0</span>, momentum<span class="fu">:</span> <span class="dt">Scalar</span> <span class="dv">0.0</span> }</a>
+<a class="sourceLine" id="cb2-43" title="43">        slider <span class="fu">=</span> numberSlider <span class="st">&quot;initial angle&quot;</span> <span class="dv">0.0</span> <span class="dv">3.14</span> <span class="dv">0.01</span> <span class="dv">1.57</span></a>
+<a class="sourceLine" id="cb2-44" title="44"></a>
+<a class="sourceLine" id="cb2-45" title="45">    <span class="dt">Plotting</span><span class="fu">.</span>lineChart <span class="st">&quot;pendulum-plot&quot;</span> [convertResult result] { title<span class="fu">:</span> <span class="st">&quot;pendulum&quot;</span> }</a>
+<a class="sourceLine" id="cb2-46" title="46">    runFlareWith <span class="st">&quot;pendulum-control&quot;</span> updatePlot slider</a></code></pre></div>
 </div>
 </div>
 </div>
