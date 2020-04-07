@@ -13,7 +13,7 @@ pandoc_args += --filter pandoc-test
 
 pendulum_sources = $(shell find src -name '*.purs')
 
-site: docs/index.html docs/css/$(framework).css docs/js/$(framework).js docs/css/mods.css docs/js/pendulum.js
+site: docs/index.html docs/css/$(framework).css docs/js/$(framework).js docs/css/mods.css docs/js/pendulum.js docs/js/double-pendulum.js
 
 clean:
 	rm -rf docs
@@ -51,4 +51,7 @@ docs/js/$(framework).js: style/$(framework_dir)/js/$(framework).js
 
 docs/js/pendulum.js: $(pendulum_sources) Makefile
 	spago bundle-app --main Pendulum --to $@
+
+docs/js/double-pendulum.js: $(pendulum_sources) Makefile
+	spago bundle-app --main DoublePendulum --to $@
 
