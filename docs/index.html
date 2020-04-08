@@ -96,7 +96,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a id="logo-container" href="#" class="brand-logo">Chaotic pendulum</a>
 <ul>
 <li><a href="#why-we-care">Why we care</a></li>
-<li><a href="#learn-some-tech">Learn some Tech</a></li>
+<li><a href="#todo">TODO</a></li>
 <li><a href="#the-pendulum">The pendulum</a></li>
 <li><a href="#leap-frog-method">Leap-frog method</a><ul>
 <li><a href="#halting-condition">Halting condition</a></li>
@@ -104,6 +104,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#integrating-the-solid-pendulum">Integrating the solid pendulum</a></li>
 </ul></li>
 <li><a href="#the-double-pendulum">The double pendulum</a></li>
+<li><a href="#animation-using-flare">Animation using Flare</a><ul>
+<li><a href="#flare">Flare</a></li>
+<li><a href="#drawing">Drawing</a></li>
+<li><a href="#main">Main</a></li>
+</ul></li>
 </ul>
 <a href="#" data-target="nav-mobile" class="sidenav-trigger">
 <i class="material-icons">menu</i>
@@ -163,34 +168,68 @@ This demonstrates some <strong>strongly typed physics</strong>, combining Hamilt
 </div>
 </div>
 <hr />
-<p>This demo shows an interactive model of the chaotic double pendulum, written in PureScript, using Pandoc and Entangled create the static web page. The entire demo runs in your web browser, so no server with Python or R is needed. Since PureScript is not the most well known programming language, I will explain some details about the use of PureScript in a bit more detail. You can recognize these by their blue shade.</p>
+<div class="container-fluid">
+<div class="row">
+<canvas class="col" id="double-pendulum-output" width="600" height="500" style="background: #eee; border-radius: 10px;">
+</canvas>
+<!-- <div id="double-pendulum-output"></div> -->
+<div id="double-pendulum-control" class="col">
+
+</div>
+</div>
+</div>
+<hr />
+<p>This demo shows an interactive model of the chaotic double pendulum, written in PureScript, using Pandoc and Entangled to create the static web page. The entire demo runs in your web browser, so unlike with Python or R no special server is needed, just host from Github pages! Since PureScript is not the most well known programming language, I will explain some details about the use of PureScript in a bit more detail. You can recognize these by their blue shade.</p>
 <div class="alert alert-info">
 <p>PureScript is a strongly typed functional language similar to Haskell that compiles to JavaScript. It has a highly formal approach to data types that matches really well with the topic of modelling dynamic systems.</p>
+<p>Other than that, I have been able to build this demo without great knowledge of JavaScript.</p>
 </div>
 <p>I understand the danger of explaining two difficult things at once. Non-linear dynamics is a difficult topic and PureScript is a language with high levels of abstraction. I’m hoping you can cherry pick from this demo whatever you’re trying to learn.</p>
 <h2 id="why-we-care">Why we care</h2>
+<p>I’ve heard some rumours that people really like Jupyter notebooks and MyBinder. Rightly so! You can show your work to colleages around the world and they don’t have to setup anything. People can learn from what you have done because the code is right there! MyBinder has some problems though: it only works with languages that have a Jupyter kernel available. While there are kernels available for languages other than Python, Julia and R, outside those two your options are really limited especially in terms of visualisation. Also MyBinder has been getting slower due to large demands on a free service. The computations are being run on a remote server and one way or another, this costs money.</p>
+<p>If you’re willing to learn JavaScript, there is the option of writing <a href="https://observablehq.com/">Observable notebooks</a>. Observable is great, but it requires you to work in JavaScript. Also, to my best knowledge Observable is not (yet) open source, so you’ll still be relying on an external service to work with your code.</p>
+<p>Thirdly, you may not always want an interactive web environment to do your coding in. Coding is hard, and we got used to working with code, runtimes and debuggers from editors, consoles and IDEs. Why change all that? There is a solution where you can mix and match languages, write your story in one or more Markdown files, have your cake and eat it too! This setup is still under development, which is in part why I made this demo.</p>
+<div class="container-fluid my-5">
+<div class="row">
+<div class="col">
+<div class="jumbotron h-100">
+<h3 id="get-to-see">Get to see</h3>
 <ul>
 <li>Experimental science blogging with live interactive demos</li>
 <li>How to use Literate Programming to learn and teach</li>
 <li>See a chaotic double pendulum in action</li>
 </ul>
-<h2 id="learn-some-tech">Learn some Tech</h2>
+</div>
+</div>
+<div class="col">
+<div class="jumbotron h-100">
+<h3 id="get-to-learn">Get to learn</h3>
 <ul>
 <li>Learn some <a href="https://purescript.org">PureScript</a></li>
 <li>See how we can call <a href="https://plotly.com">PlotLy</a> from PureScript</li>
-<li>Use the PureScript <a href="https://github.com/sharkdp/purescript-flare">Flare library</a> to create demos</li>
+<li>Use the PureScript <a href="https://github.com/sharkdp/purescript-flare">Flare library</a> to create interactive demos</li>
 <li>Use Pandoc to create a static <a href="https://getbootstrap.com">Bootstrap</a> page</li>
 <li>Use <a href="https://entangled.github.io">Entangled</a> for literate programming</li>
 </ul>
-<p>The physics used in this demo assumes some understanding of Lagrangian/Hamiltonian dynamics.</p>
-<p>We will first model the time evolution of a simple pendulum, and then extend our model to that of a double pendulum.</p>
+</div>
+</div>
+</div>
+</div>
+<p>The physics used in this demo assumes some understanding of Lagrangian/Hamiltonian dynamics. We will first model the time evolution of a simple pendulum, and then extend our model to that of a double pendulum.</p>
+<h2 id="todo">TODO</h2>
+<ul>
+<li>Reduce CPU usage when animation is not playing</li>
+<li>Have a table of contents / navigation</li>
+<li>Write pandoc filter for collapsable code cells</li>
+<li>Write pandoc filter for card-deck on top</li>
+<li>Add footer</li>
+</ul>
 <h1 id="the-pendulum">The pendulum</h1>
-<p>The pendulum still makes the world tick:</p>
-<p><span class="math display">\[\mathcal{L}(t; \theta, \dot{\theta}) = \frac{1}{2}ml^2\dot{\theta}^2 + mgl \cos\theta.\]</span></p>
+<p>It was found by Christiaan Huygens that a pendulum can make an excelent clock. We assume a solid massless rod suspending a weight of mass <span class="math inline">\(m\)</span> at a length <span class="math inline">\(l\)</span> from the origin. The Lagrangian for such a system (being <span class="math inline">\(\mathcal{L} = T - U\)</span>, where <span class="math inline">\(T\)</span> is the kinetic energy and <span class="math inline">\(U\)</span> is the potential energy) is written as</p>
+<p><span class="math display">\[\mathcal{L}(\theta, \dot{\theta}) = \frac{1}{2}ml^2\dot{\theta}^2 + mgl \cos\theta.\]</span></p>
 <p>Using the Euler-Lagrange equations, in very terse notation <span class="math inline">\(D_t \partial_{\dot{\theta}} \mathcal{L} = \partial_{\theta} \mathcal{L}\)</span>, leads to</p>
 <p><span class="math display">\[\ddot{\theta} = -\frac{g}{l} \sin\theta.\]</span></p>
-<p>To solve this, we write down the equation in phase-space using position <span class="math inline">\(\vec{q}(t) = \theta(t)\)</span> and momentum <span class="math inline">\(\vec{p}(t) = D_{\dot{\theta}} \mathcal{L} = ml^2\dot{\theta}(t)\)</span>.</p>
-<p>And the Hamiltonian becomes</p>
+<p>This is a second order non-linear differential equation. To solve this numerically we write down the equation in phase-space using position <span class="math inline">\(\vec{q}(t) = \theta(t)\)</span> and momentum <span class="math inline">\(\vec{p}(t) = D_{\dot{\theta}} \mathcal{L} = ml^2\dot{\theta}(t)\)</span>. This is best done using the Hamiltonian formalism. The Hamiltonian becomes</p>
 <p><span class="math display">\[\mathcal{H} = \frac{\vec{p}^2}{2ml^2} - mgl \cos \vec{q}.\]</span></p>
 <p>Having <span class="math inline">\(\dot{\vec{p}} = - \partial_q \mathcal{H}\)</span> and <span class="math inline">\(\dot{\vec{q}} = + \partial_p \mathcal{H}\)</span>.</p>
 <p><span class="math display">\[\begin{pmatrix}\dot{\vec{q}} \\ \dot{\vec{p}}\end{pmatrix} = \begin{pmatrix}\vec{p} / {ml^2} \\ -mgl \sin \vec{q}\end{pmatrix}.\]</span></p>
@@ -404,6 +443,7 @@ This demonstrates some <strong>strongly typed physics</strong>, combining Hamilt
 </div>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script type="text/javascript" src="js/pendulum.js"></script>
+<p><br><br></p>
 <h1 id="the-double-pendulum">The double pendulum</h1>
 <p>The double pendulum is more complicated than the single one. We now have two angles <span class="math inline">\(\theta\)</span> and <span class="math inline">\(\varphi\)</span>, two lengths <span class="math inline">\(k\)</span> and <span class="math inline">\(l\)</span>, and two masses <span class="math inline">\(m\)</span> and <span class="math inline">\(n\)</span>. The potential energy is</p>
 <p><span class="math display">\[U(\theta, \varphi) = - m g k \cos{\theta} - n g (k \cos{\theta} + l \cos{\varphi}),\]</span></p>
@@ -513,99 +553,142 @@ a &amp;&amp; c \\ c &amp;&amp; b\end{pmatrix}^{-1} = \frac{1}{ab - c^2} \begin{p
 <a class="sourceLine" id="double-pendulum-24" title="24">                    c <span class="fu">=</span> z<span class="fu">.</span>m2 <span class="fu">*</span> z<span class="fu">.</span>l1 <span class="fu">*</span> z<span class="fu">.</span>l2 <span class="fu">*</span> (mu q)</a></code></pre></div>
 </div>
 <p>Terrible indeed. It is amazing how quickly the addition of another pendulum to the system just explodes in your face.</p>
-<!-- <canvas id="double-pendulum-output" width="300" height="300"></canvas> -->
-<div id="double-pendulum-output">
-
+<h1 id="animation-using-flare">Animation using Flare</h1>
+<p>We have an animation canvas and a button that controls if the animation plays or not. The <code>Model</code> is as follows:</p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum-animation»=</em></span></p>
+<div class="sourceCode" id="double-pendulum-animation"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-animation-1" title="1"><span class="kw">type</span> <span class="dt">Model</span> <span class="fu">=</span></a>
+<a class="sourceLine" id="double-pendulum-animation-2" title="2">    { <span class="ot">state       </span><span class="fu">::</span> <span class="dt">State</span> <span class="dt">Coordinates</span></a>
+<a class="sourceLine" id="double-pendulum-animation-3" title="3">    , <span class="ot">params      </span><span class="fu">::</span> <span class="dt">DoublePendulum</span></a>
+<a class="sourceLine" id="double-pendulum-animation-4" title="4">    , <span class="ot">currentTime </span><span class="fu">::</span> <span class="dt">Number</span></a>
+<a class="sourceLine" id="double-pendulum-animation-5" title="5">    , <span class="ot">timeStep    </span><span class="fu">::</span> <span class="dt">Number</span></a>
+<a class="sourceLine" id="double-pendulum-animation-6" title="6">    , <span class="ot">playing     </span><span class="fu">::</span> <span class="dt">Boolean</span> }</a></code></pre></div>
 </div>
-<div id="double-pendulum-control">
-
+<p>The model is updated by passing messages to an <code>update</code> function.</p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum-animation»+</em></span></p>
+<div class="sourceCode" id="double-pendulum-animation"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-animation-1" title="1">data <span class="dt">Msg</span> <span class="fu">=</span></a>
+<a class="sourceLine" id="double-pendulum-animation-2" title="2">      <span class="dt">AnimationFrame</span> <span class="dt">Number</span></a>
+<a class="sourceLine" id="double-pendulum-animation-3" title="3">    <span class="fu">|</span> <span class="dt">TogglePlay</span></a>
+<a class="sourceLine" id="double-pendulum-animation-4" title="4">    <span class="fu">|</span> <span class="dt">None</span></a></code></pre></div>
 </div>
+<p>Updating the model:</p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum-animation»+</em></span></p>
+<div class="sourceCode" id="double-pendulum-animation"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-animation-1" title="1"><span class="ot">forwardModel </span><span class="fu">::</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">Model</span> <span class="fu">-&gt;</span> <span class="dt">Model</span></a>
+<a class="sourceLine" id="double-pendulum-animation-2" title="2">forwardModel dt m <span class="fu">=</span> m { state <span class="fu">=</span> moduloState newState</a>
+<a class="sourceLine" id="double-pendulum-animation-3" title="3">                      , currentTime <span class="fu">=</span> newTime }</a>
+<a class="sourceLine" id="double-pendulum-animation-4" title="4">    where newState <span class="fu">=</span> iterateSolution</a>
+<a class="sourceLine" id="double-pendulum-animation-5" title="5">            (leapFrog m<span class="fu">.</span>timeStep (doublePendulum m<span class="fu">.</span>params))</a>
+<a class="sourceLine" id="double-pendulum-animation-6" title="6">            (haltAtTime <span class="fu">$</span> m<span class="fu">.</span>state<span class="fu">.</span>time <span class="fu">+</span> dt)</a>
+<a class="sourceLine" id="double-pendulum-animation-7" title="7">            m<span class="fu">.</span>state</a>
+<a class="sourceLine" id="double-pendulum-animation-8" title="8">          newTime <span class="fu">=</span> m<span class="fu">.</span>currentTime <span class="fu">+</span> newState<span class="fu">.</span>time <span class="fu">-</span> m<span class="fu">.</span>state<span class="fu">.</span>time</a>
+<a class="sourceLine" id="double-pendulum-animation-9" title="9"></a>
+<a class="sourceLine" id="double-pendulum-animation-10" title="10"><span class="ot">moduloState </span><span class="fu">::</span> <span class="dt">State</span> <span class="dt">Coordinates</span> <span class="fu">-&gt;</span> <span class="dt">State</span> <span class="dt">Coordinates</span></a>
+<a class="sourceLine" id="double-pendulum-animation-11" title="11">moduloState s<span class="fu">@</span>{ position<span class="fu">:</span> <span class="dt">Coordinates</span> { theta, phi } } <span class="fu">=</span></a>
+<a class="sourceLine" id="double-pendulum-animation-12" title="12">    s { position <span class="fu">=</span> <span class="dt">Coordinates</span> { theta<span class="fu">:</span> theta <span class="fu">%</span> (<span class="dv">2.0</span><span class="fu">*</span>pi)</a>
+<a class="sourceLine" id="double-pendulum-animation-13" title="13">                               , phi<span class="fu">:</span> phi <span class="fu">%</span> (<span class="dv">2.0</span><span class="fu">*</span>pi) } }</a>
+<a class="sourceLine" id="double-pendulum-animation-14" title="14"></a>
+<a class="sourceLine" id="double-pendulum-animation-15" title="15"><span class="ot">update </span><span class="fu">::</span> <span class="dt">Msg</span> <span class="fu">-&gt;</span> <span class="dt">Model</span> <span class="fu">-&gt;</span> <span class="dt">Model</span></a>
+<a class="sourceLine" id="double-pendulum-animation-16" title="16">update (<span class="dt">AnimationFrame</span> t) m <span class="fu">=</span> <span class="kw">if</span> (t <span class="fu">/</span> <span class="dv">1000.0</span> <span class="fu">-</span> m<span class="fu">.</span>currentTime) <span class="fu">&gt;</span> m<span class="fu">.</span>timeStep</a>
+<a class="sourceLine" id="double-pendulum-animation-17" title="17">    <span class="kw">then</span> <span class="kw">if</span> m<span class="fu">.</span>playing</a>
+<a class="sourceLine" id="double-pendulum-animation-18" title="18">         <span class="kw">then</span> forwardModel (t <span class="fu">/</span> <span class="dv">1000.0</span> <span class="fu">-</span> m<span class="fu">.</span>currentTime) m</a>
+<a class="sourceLine" id="double-pendulum-animation-19" title="19">         <span class="kw">else</span> m { currentTime <span class="fu">=</span> t <span class="fu">/</span> <span class="dv">1000.0</span> }</a>
+<a class="sourceLine" id="double-pendulum-animation-20" title="20">    <span class="kw">else</span> m</a>
+<a class="sourceLine" id="double-pendulum-animation-21" title="21">update <span class="dt">TogglePlay</span> m <span class="fu">=</span> m { playing <span class="fu">=</span> not m<span class="fu">.</span>playing }</a>
+<a class="sourceLine" id="double-pendulum-animation-22" title="22">update <span class="dt">None</span> m <span class="fu">=</span> m</a></code></pre></div>
+</div>
+<p>And we use the following initial state:</p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum-animation»+</em></span></p>
+<div class="sourceCode" id="double-pendulum-animation"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-animation-1" title="1"><span class="ot">initModel </span><span class="fu">::</span> <span class="dt">Model</span></a>
+<a class="sourceLine" id="double-pendulum-animation-2" title="2">initModel <span class="fu">=</span></a>
+<a class="sourceLine" id="double-pendulum-animation-3" title="3">    { state<span class="fu">:</span>  { position<span class="fu">:</span> <span class="dt">Coordinates</span> { theta<span class="fu">:</span> pi <span class="fu">/</span> <span class="dv">2.0</span>, phi<span class="fu">:</span> <span class="dv">0.0</span> }</a>
+<a class="sourceLine" id="double-pendulum-animation-4" title="4">              , momentum<span class="fu">:</span> <span class="dt">Coordinates</span> { theta<span class="fu">:</span> <span class="dv">0.0</span>,      phi<span class="fu">:</span> <span class="dv">0.0</span> }</a>
+<a class="sourceLine" id="double-pendulum-animation-5" title="5">              , time<span class="fu">:</span> <span class="dv">0.0</span> }</a>
+<a class="sourceLine" id="double-pendulum-animation-6" title="6">    , params<span class="fu">:</span> { l1<span class="fu">:</span> <span class="dv">1.6</span>, l2<span class="fu">:</span> <span class="dv">1.2</span>, m1<span class="fu">:</span> <span class="dv">2.0</span>, m2<span class="fu">:</span> <span class="dv">1.5</span>, g<span class="fu">:</span> <span class="dv">9.81</span> }</a>
+<a class="sourceLine" id="double-pendulum-animation-7" title="7">    , currentTime<span class="fu">:</span> <span class="dv">0.0</span></a>
+<a class="sourceLine" id="double-pendulum-animation-8" title="8">    , timeStep<span class="fu">:</span> <span class="dv">0.01</span></a>
+<a class="sourceLine" id="double-pendulum-animation-9" title="9">    , playing<span class="fu">:</span> false }</a></code></pre></div>
+</div>
+<h2 id="flare">Flare</h2>
+<p>Using <code>Flare</code> we can create a set of UI controls that generate a stream of messages. The <code>events</code> function takes a <code>Signal Number</code> argument that generates a signal for every animation frame.</p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum-flare»=</em></span></p>
+<div class="sourceCode" id="double-pendulum-flare"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-flare-1" title="1"><span class="ot">events </span><span class="fu">::</span> <span class="dt">Signal.Signal</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">Flare.UI</span> <span class="dt">Msg</span></a>
+<a class="sourceLine" id="double-pendulum-flare-2" title="2">events time <span class="fu">=</span> <span class="dt">Flare</span><span class="fu">.</span>liftSF (<span class="dt">Signal</span><span class="fu">.</span>merge <span class="fu">$</span> <span class="dt">AnimationFrame</span> <span class="fu">&lt;$&gt;</span> time)</a>
+<a class="sourceLine" id="double-pendulum-flare-3" title="3">                           (<span class="dt">Flare</span><span class="fu">.</span>button <span class="st">&quot;Play/Pause&quot;</span> <span class="dt">None</span> <span class="dt">TogglePlay</span>)</a></code></pre></div>
+</div>
+<p>In the <code>main</code> function we can obtain the animation signal, and pass it to <code>events</code>. Using <code>Flare.foldp</code> the series of <code>Msg</code> messages is converted into a series of <code>Model</code> objects. These are then rendered to a canvas in the <code>draw</code> function.</p>
+<div class="annotated-code">
+<p><span><em>«double-pendulum-flare»+</em></span></p>
+<div class="sourceCode" id="double-pendulum-flare"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-flare-1" title="1"><span class="ot">main </span><span class="fu">::</span> <span class="dt">Effect</span> <span class="dt">Unit</span></a>
+<a class="sourceLine" id="double-pendulum-flare-2" title="2">main <span class="fu">=</span> do</a>
+<a class="sourceLine" id="double-pendulum-flare-3" title="3">    time <span class="fu">&lt;-</span> animationFrame</a>
+<a class="sourceLine" id="double-pendulum-flare-4" title="4">    <span class="kw">let</span> model <span class="fu">=</span> <span class="dt">Flare</span><span class="fu">.</span>foldp update initModel (events time)</a>
+<a class="sourceLine" id="double-pendulum-flare-5" title="5">    runFlareDrawing <span class="st">&quot;double-pendulum-control&quot;</span> </a>
+<a class="sourceLine" id="double-pendulum-flare-6" title="6">                    <span class="st">&quot;double-pendulum-output&quot;</span></a>
+<a class="sourceLine" id="double-pendulum-flare-7" title="7">                    (draw <span class="fu">&lt;$&gt;</span> model)</a></code></pre></div>
+</div>
+<h2 id="drawing">Drawing</h2>
+<div class="annotated-code">
+<p><span><em>«double-pendulum-flare»+</em></span></p>
+<div class="sourceCode" id="double-pendulum-flare"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="double-pendulum-flare-1" title="1"><span class="ot">draw </span><span class="fu">::</span> <span class="dt">Model</span> <span class="fu">-&gt;</span> <span class="dt">Drawing.Drawing</span></a>
+<a class="sourceLine" id="double-pendulum-flare-2" title="2">draw { state<span class="fu">:</span>  { position<span class="fu">:</span> <span class="dt">Coordinates</span> q }</a>
+<a class="sourceLine" id="double-pendulum-flare-3" title="3">     , params<span class="fu">:</span> { l1, l2, m1, m2 } } <span class="fu">=</span></a>
+<a class="sourceLine" id="double-pendulum-flare-4" title="4">    <span class="kw">let</span> p1    <span class="fu">=</span> { x<span class="fu">:</span> l1 <span class="fu">*</span> (sin q<span class="fu">.</span>theta), y<span class="fu">:</span> l1 <span class="fu">*</span> (cos q<span class="fu">.</span>theta) }</a>
+<a class="sourceLine" id="double-pendulum-flare-5" title="5">        p2    <span class="fu">=</span> { x<span class="fu">:</span> p1<span class="fu">.</span>x <span class="fu">+</span> l2 <span class="fu">*</span> (sin q<span class="fu">.</span>phi), y<span class="fu">:</span> p1<span class="fu">.</span>y <span class="fu">+</span> l2 <span class="fu">*</span> (cos q<span class="fu">.</span>phi) }</a>
+<a class="sourceLine" id="double-pendulum-flare-6" title="6">        orig  <span class="fu">=</span> { x<span class="fu">:</span> <span class="dv">0.0</span>, y<span class="fu">:</span> <span class="dv">0.0</span> }</a>
+<a class="sourceLine" id="double-pendulum-flare-7" title="7">        tr {x, y} <span class="fu">=</span> { x<span class="fu">:</span> x<span class="fu">*</span><span class="dv">100.0</span> <span class="fu">+</span> <span class="dv">300.0</span>, y<span class="fu">:</span> y<span class="fu">*</span><span class="dv">100.0</span> <span class="fu">+</span> <span class="dv">100.0</span> }</a>
+<a class="sourceLine" id="double-pendulum-flare-8" title="8">        rods  <span class="fu">=</span> <span class="dt">Drawing</span><span class="fu">.</span>outlined </a>
+<a class="sourceLine" id="double-pendulum-flare-9" title="9">                    (<span class="dt">Drawing</span><span class="fu">.</span>lineWidth <span class="dv">2.0</span> <span class="fu">&lt;&gt;</span> <span class="dt">Drawing</span><span class="fu">.</span>outlineColor (rgb&#39; <span class="dv">0.0</span> <span class="dv">0.0</span> <span class="dv">0.0</span>))</a>
+<a class="sourceLine" id="double-pendulum-flare-10" title="10">                    (<span class="dt">Drawing</span><span class="fu">.</span>path <span class="fu">$</span> map tr [orig, p1, p2])</a>
+<a class="sourceLine" id="double-pendulum-flare-11" title="11">        hinge <span class="fu">=</span> <span class="dt">Drawing</span><span class="fu">.</span>filled</a>
+<a class="sourceLine" id="double-pendulum-flare-12" title="12">                    (<span class="dt">Drawing</span><span class="fu">.</span>fillColor (rgb&#39; <span class="dv">0.0</span> <span class="dv">0.0</span> <span class="dv">0.0</span>))</a>
+<a class="sourceLine" id="double-pendulum-flare-13" title="13">                    (<span class="dt">Drawing</span><span class="fu">.</span>circle (tr orig)<span class="fu">.</span>x (tr orig)<span class="fu">.</span>y <span class="dv">3.0</span>)</a>
+<a class="sourceLine" id="double-pendulum-flare-14" title="14">        mass1 <span class="fu">=</span> <span class="dt">Drawing</span><span class="fu">.</span>filled</a>
+<a class="sourceLine" id="double-pendulum-flare-15" title="15">                    (<span class="dt">Drawing</span><span class="fu">.</span>fillColor (rgb&#39; <span class="dv">0.5</span> <span class="dv">0.0</span> <span class="dv">0.0</span>))</a>
+<a class="sourceLine" id="double-pendulum-flare-16" title="16">                    (<span class="dt">Drawing</span><span class="fu">.</span>circle (tr p1)<span class="fu">.</span>x (tr p1)<span class="fu">.</span>y (m1 <span class="fu">*</span> <span class="dv">4.0</span>))</a>
+<a class="sourceLine" id="double-pendulum-flare-17" title="17">        mass2 <span class="fu">=</span> <span class="dt">Drawing</span><span class="fu">.</span>filled</a>
+<a class="sourceLine" id="double-pendulum-flare-18" title="18">                    (<span class="dt">Drawing</span><span class="fu">.</span>fillColor (rgb&#39; <span class="dv">0.5</span> <span class="dv">0.0</span> <span class="dv">0.0</span>))</a>
+<a class="sourceLine" id="double-pendulum-flare-19" title="19">                    (<span class="dt">Drawing</span><span class="fu">.</span>circle (tr p2)<span class="fu">.</span>x (tr p2)<span class="fu">.</span>y (m2 <span class="fu">*</span> <span class="dv">4.0</span>))</a>
+<a class="sourceLine" id="double-pendulum-flare-20" title="20">    in <span class="dt">Drawing</span><span class="fu">.</span>shadow (<span class="dt">Drawing</span><span class="fu">.</span>shadowOffset <span class="dv">2.0</span> <span class="dv">2.0</span> <span class="fu">&lt;&gt;</span> <span class="dt">Drawing</span><span class="fu">.</span>shadowBlur <span class="dv">4.0</span> <span class="fu">&lt;&gt;</span> <span class="dt">Drawing</span><span class="fu">.</span>shadowColor (rgb&#39; <span class="dv">0.5</span> <span class="dv">0.5</span> <span class="dv">0.5</span>))</a>
+<a class="sourceLine" id="double-pendulum-flare-21" title="21">                      (rods <span class="fu">&lt;&gt;</span> hinge <span class="fu">&lt;&gt;</span> mass1 <span class="fu">&lt;&gt;</span> mass2)</a></code></pre></div>
+</div>
+<h2 id="main">Main</h2>
+<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#double-pendulum-main" aria-controls="double-pendulum-main">
+&lt;&lt;double-pendulum-main&gt;&gt;=
+</button>
+<div id="double-pendulum-main" class="collapse">
+<div class="card" style="height: 20em">
+<div class="overflow-auto">
 <div class="annotated-code">
 <p><span><em>«src/DoublePendulum.purs»=</em></span></p>
 <div class="sourceCode" id="cb5" data-file="src/DoublePendulum.purs"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="cb5-1" title="1">module <span class="dt">DoublePendulum</span> where</a>
 <a class="sourceLine" id="cb5-2" title="2"></a>
 <a class="sourceLine" id="cb5-3" title="3">import <span class="dt">Prelude</span></a>
 <a class="sourceLine" id="cb5-4" title="4">import <span class="dt">Effect</span> (<span class="dt">Effect</span>)</a>
-<a class="sourceLine" id="cb5-5" title="5">import <span class="dt">Math</span> (pow, cos, sin, pi)</a>
+<a class="sourceLine" id="cb5-5" title="5">import <span class="dt">Math</span> (pow, cos, sin, pi, (<span class="fu">%</span>))</a>
 <a class="sourceLine" id="cb5-6" title="6"></a>
-<a class="sourceLine" id="cb5-7" title="7">import <span class="dt">Hamilton</span> ( <span class="dt">HamiltonianSystem</span>, <span class="dt">State</span>, integrateSystem, leapFrog, haltAtTime</a>
-<a class="sourceLine" id="cb5-8" title="8">                , iterateSolution )</a>
-<a class="sourceLine" id="cb5-9" title="9"><span class="fu">--</span> import <span class="dt">Plotting</span> (lineChart)</a>
-<a class="sourceLine" id="cb5-10" title="10"></a>
-<a class="sourceLine" id="cb5-11" title="11">import <span class="dt">Flare</span> as <span class="dt">Flare</span></a>
-<a class="sourceLine" id="cb5-12" title="12">import <span class="dt">Flare.Drawing</span> (runFlareDrawing)</a>
-<a class="sourceLine" id="cb5-13" title="13">import <span class="dt">Signal</span> as <span class="dt">Signal</span></a>
-<a class="sourceLine" id="cb5-14" title="14">import <span class="dt">Signal.DOM</span> (animationFrame)</a>
-<a class="sourceLine" id="cb5-15" title="15"></a>
-<a class="sourceLine" id="cb5-16" title="16">import <span class="dt">Graphics.Drawing</span> as <span class="dt">Drawing</span></a>
-<a class="sourceLine" id="cb5-17" title="17">import <span class="dt">Color</span> (rgb&#39;)</a>
-<a class="sourceLine" id="cb5-18" title="18"></a>
-<a class="sourceLine" id="cb5-19" title="19"><span class="fu">&lt;&lt;</span><span class="dt">double</span><span class="fu">-</span>pendulum<span class="fu">&gt;&gt;</span></a>
-<a class="sourceLine" id="cb5-20" title="20"></a>
-<a class="sourceLine" id="cb5-21" title="21"><span class="kw">type</span> <span class="dt">Model</span> <span class="fu">=</span></a>
-<a class="sourceLine" id="cb5-22" title="22">    { <span class="ot">state       </span><span class="fu">::</span> <span class="dt">State</span> <span class="dt">Coordinates</span></a>
-<a class="sourceLine" id="cb5-23" title="23">    , <span class="ot">params      </span><span class="fu">::</span> <span class="dt">DoublePendulum</span></a>
-<a class="sourceLine" id="cb5-24" title="24">    , <span class="ot">currentTime </span><span class="fu">::</span> <span class="dt">Number</span></a>
-<a class="sourceLine" id="cb5-25" title="25">    , <span class="ot">timeStep    </span><span class="fu">::</span> <span class="dt">Number</span></a>
-<a class="sourceLine" id="cb5-26" title="26">    , <span class="ot">playing     </span><span class="fu">::</span> <span class="dt">Boolean</span> }</a>
-<a class="sourceLine" id="cb5-27" title="27"></a>
-<a class="sourceLine" id="cb5-28" title="28">data <span class="dt">Msg</span> <span class="fu">=</span></a>
-<a class="sourceLine" id="cb5-29" title="29">      <span class="dt">AnimationFrame</span> <span class="dt">Number</span></a>
-<a class="sourceLine" id="cb5-30" title="30">    <span class="fu">|</span> <span class="dt">TogglePlay</span></a>
-<a class="sourceLine" id="cb5-31" title="31">    <span class="fu">|</span> <span class="dt">None</span></a>
-<a class="sourceLine" id="cb5-32" title="32"></a>
-<a class="sourceLine" id="cb5-33" title="33"><span class="ot">initModel </span><span class="fu">::</span> <span class="dt">Model</span></a>
-<a class="sourceLine" id="cb5-34" title="34">initModel <span class="fu">=</span></a>
-<a class="sourceLine" id="cb5-35" title="35">    { state<span class="fu">:</span>  { position<span class="fu">:</span> <span class="dt">Coordinates</span> { theta<span class="fu">:</span> pi <span class="fu">/</span> <span class="dv">2.0</span>, phi<span class="fu">:</span> <span class="dv">0.0</span> }</a>
-<a class="sourceLine" id="cb5-36" title="36">              , momentum<span class="fu">:</span> <span class="dt">Coordinates</span> { theta<span class="fu">:</span> <span class="dv">0.0</span>,      phi<span class="fu">:</span> <span class="dv">0.0</span> }</a>
-<a class="sourceLine" id="cb5-37" title="37">              , time<span class="fu">:</span> <span class="dv">0.0</span> }</a>
-<a class="sourceLine" id="cb5-38" title="38">    , params<span class="fu">:</span> { l1<span class="fu">:</span> <span class="dv">1.0</span>, l2<span class="fu">:</span> <span class="dv">1.0</span>, m1<span class="fu">:</span> <span class="dv">1.0</span>, m2<span class="fu">:</span> <span class="dv">1.0</span>, g<span class="fu">:</span> <span class="dv">9.81</span> }</a>
-<a class="sourceLine" id="cb5-39" title="39">    , currentTime<span class="fu">:</span> <span class="dv">0.0</span></a>
-<a class="sourceLine" id="cb5-40" title="40">    , timeStep<span class="fu">:</span> <span class="dv">0.02</span></a>
-<a class="sourceLine" id="cb5-41" title="41">    , playing<span class="fu">:</span> true }</a>
-<a class="sourceLine" id="cb5-42" title="42"></a>
-<a class="sourceLine" id="cb5-43" title="43"><span class="ot">forwardModel </span><span class="fu">::</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">Model</span> <span class="fu">-&gt;</span> <span class="dt">Model</span></a>
-<a class="sourceLine" id="cb5-44" title="44">forwardModel dt m <span class="fu">=</span> m { state <span class="fu">=</span> newState, currentTime <span class="fu">=</span> newTime }</a>
-<a class="sourceLine" id="cb5-45" title="45">    where newState <span class="fu">=</span> iterateSolution</a>
-<a class="sourceLine" id="cb5-46" title="46">            (leapFrog m<span class="fu">.</span>timeStep (doublePendulum m<span class="fu">.</span>params))</a>
-<a class="sourceLine" id="cb5-47" title="47">            (haltAtTime <span class="fu">$</span> m<span class="fu">.</span>state<span class="fu">.</span>time <span class="fu">+</span> dt)</a>
-<a class="sourceLine" id="cb5-48" title="48">            m<span class="fu">.</span>state</a>
-<a class="sourceLine" id="cb5-49" title="49">          newTime <span class="fu">=</span> m<span class="fu">.</span>currentTime <span class="fu">+</span> newState<span class="fu">.</span>time <span class="fu">-</span> m<span class="fu">.</span>state<span class="fu">.</span>time</a>
-<a class="sourceLine" id="cb5-50" title="50"></a>
-<a class="sourceLine" id="cb5-51" title="51"><span class="ot">update </span><span class="fu">::</span> <span class="dt">Msg</span> <span class="fu">-&gt;</span> <span class="dt">Model</span> <span class="fu">-&gt;</span> <span class="dt">Model</span></a>
-<a class="sourceLine" id="cb5-52" title="52">update (<span class="dt">AnimationFrame</span> t) m <span class="fu">=</span> <span class="kw">if</span> m<span class="fu">.</span>playing</a>
-<a class="sourceLine" id="cb5-53" title="53">    <span class="kw">then</span> forwardModel (t <span class="fu">/</span> <span class="dv">1000.0</span> <span class="fu">-</span> m<span class="fu">.</span>currentTime) m</a>
-<a class="sourceLine" id="cb5-54" title="54">    <span class="kw">else</span> m { currentTime <span class="fu">=</span> t <span class="fu">/</span> <span class="dv">1000.0</span> }</a>
-<a class="sourceLine" id="cb5-55" title="55">update <span class="dt">TogglePlay</span> m <span class="fu">=</span> m { playing <span class="fu">=</span> not m<span class="fu">.</span>playing }</a>
-<a class="sourceLine" id="cb5-56" title="56">update <span class="dt">None</span> m <span class="fu">=</span> m</a>
-<a class="sourceLine" id="cb5-57" title="57"></a>
-<a class="sourceLine" id="cb5-58" title="58"><span class="ot">draw </span><span class="fu">::</span> <span class="dt">Model</span> <span class="fu">-&gt;</span> <span class="dt">Drawing.Drawing</span></a>
-<a class="sourceLine" id="cb5-59" title="59">draw { state<span class="fu">:</span>  { position<span class="fu">:</span> <span class="dt">Coordinates</span> q }</a>
-<a class="sourceLine" id="cb5-60" title="60">     , params<span class="fu">:</span> { l1, l2 } } <span class="fu">=</span></a>
-<a class="sourceLine" id="cb5-61" title="61">    <span class="kw">let</span> path <span class="fu">=</span> <span class="dt">Drawing</span><span class="fu">.</span>path</a>
-<a class="sourceLine" id="cb5-62" title="62">            [ { x<span class="fu">:</span> <span class="dv">0.0</span>,                y<span class="fu">:</span> <span class="dv">0.0</span> }</a>
-<a class="sourceLine" id="cb5-63" title="63">            , { x<span class="fu">:</span> l1<span class="fu">*</span><span class="dv">100.0</span> <span class="fu">*</span> (sin q<span class="fu">.</span>theta), y<span class="fu">:</span> l1 <span class="fu">*</span> <span class="dv">100.0</span> <span class="fu">*</span> (cos q<span class="fu">.</span>theta) }</a>
-<a class="sourceLine" id="cb5-64" title="64">            , { x<span class="fu">:</span> l1 <span class="fu">*</span><span class="dv">100.0</span><span class="fu">*</span> (sin q<span class="fu">.</span>theta) <span class="fu">+</span> l2 <span class="fu">*</span> <span class="dv">100.0</span> <span class="fu">*</span> (sin q<span class="fu">.</span>phi)</a>
-<a class="sourceLine" id="cb5-65" title="65">              , y<span class="fu">:</span> l1 <span class="fu">*</span><span class="dv">100.0</span><span class="fu">*</span> (cos q<span class="fu">.</span>theta) <span class="fu">+</span> l2 <span class="fu">*</span> <span class="dv">100.0</span> <span class="fu">*</span> (cos q<span class="fu">.</span>phi) } ]</a>
-<a class="sourceLine" id="cb5-66" title="66">        style <span class="fu">=</span> <span class="dt">Drawing</span><span class="fu">.</span>lineWidth <span class="dv">2.0</span> <span class="fu">&lt;&gt;</span> <span class="dt">Drawing</span><span class="fu">.</span>outlineColor (rgb&#39; <span class="dv">0.0</span> <span class="dv">0.0</span> <span class="dv">0.0</span>)</a>
-<a class="sourceLine" id="cb5-67" title="67">    in <span class="dt">Drawing</span><span class="fu">.</span>outlined style path</a>
-<a class="sourceLine" id="cb5-68" title="68"></a>
-<a class="sourceLine" id="cb5-69" title="69"><span class="ot">events </span><span class="fu">::</span> <span class="dt">Signal.Signal</span> <span class="dt">Number</span> <span class="fu">-&gt;</span> <span class="dt">Flare.UI</span> <span class="dt">Msg</span></a>
-<a class="sourceLine" id="cb5-70" title="70">events time <span class="fu">=</span> <span class="dt">Flare</span><span class="fu">.</span>liftSF (<span class="dt">Signal</span><span class="fu">.</span>merge <span class="fu">$</span> <span class="dt">AnimationFrame</span> <span class="fu">&lt;$&gt;</span> time)</a>
-<a class="sourceLine" id="cb5-71" title="71">                           (<span class="dt">Flare</span><span class="fu">.</span>button <span class="st">&quot;Play&quot;</span> <span class="dt">None</span> <span class="dt">TogglePlay</span>)</a>
-<a class="sourceLine" id="cb5-72" title="72"></a>
-<a class="sourceLine" id="cb5-73" title="73"><span class="ot">main </span><span class="fu">::</span> <span class="dt">Effect</span> <span class="dt">Unit</span></a>
-<a class="sourceLine" id="cb5-74" title="74">main <span class="fu">=</span> do</a>
-<a class="sourceLine" id="cb5-75" title="75">    time <span class="fu">&lt;-</span> animationFrame</a>
-<a class="sourceLine" id="cb5-76" title="76">    <span class="kw">let</span> model <span class="fu">=</span> <span class="dt">Flare</span><span class="fu">.</span>foldp update initModel (events time)</a>
-<a class="sourceLine" id="cb5-77" title="77">    {<span class="fu">-</span> runFlareDrawing <span class="st">&quot;double-pendulum-control&quot;</span> </a>
-<a class="sourceLine" id="cb5-78" title="78">                    <span class="st">&quot;double-pendulum-output&quot;</span></a>
-<a class="sourceLine" id="cb5-79" title="79">                    (draw <span class="fu">&lt;$&gt;</span> model) <span class="fu">-</span>}</a>
-<a class="sourceLine" id="cb5-80" title="80">    <span class="dt">Flare</span><span class="fu">.</span>runFlareShow <span class="st">&quot;double-pendulum-control&quot;</span></a>
-<a class="sourceLine" id="cb5-81" title="81">                       <span class="st">&quot;double-pendulum-output&quot;</span></a>
-<a class="sourceLine" id="cb5-82" title="82">                       model</a></code></pre></div>
+<a class="sourceLine" id="cb5-7" title="7">import <span class="dt">Hamilton</span> ( <span class="dt">HamiltonianSystem</span>, <span class="dt">State</span>, leapFrog, haltAtTime, iterateSolution )</a>
+<a class="sourceLine" id="cb5-8" title="8"></a>
+<a class="sourceLine" id="cb5-9" title="9">import <span class="dt">Flare</span> as <span class="dt">Flare</span></a>
+<a class="sourceLine" id="cb5-10" title="10">import <span class="dt">Flare.Drawing</span> (runFlareDrawing)</a>
+<a class="sourceLine" id="cb5-11" title="11">import <span class="dt">Signal</span> as <span class="dt">Signal</span></a>
+<a class="sourceLine" id="cb5-12" title="12">import <span class="dt">Signal.DOM</span> (animationFrame)</a>
+<a class="sourceLine" id="cb5-13" title="13"></a>
+<a class="sourceLine" id="cb5-14" title="14">import <span class="dt">Graphics.Drawing</span> as <span class="dt">Drawing</span></a>
+<a class="sourceLine" id="cb5-15" title="15">import <span class="dt">Color</span> (rgb&#39;)</a>
+<a class="sourceLine" id="cb5-16" title="16"></a>
+<a class="sourceLine" id="cb5-17" title="17"><span class="fu">&lt;&lt;</span><span class="dt">double</span><span class="fu">-</span>pendulum<span class="fu">&gt;&gt;</span></a>
+<a class="sourceLine" id="cb5-18" title="18"><span class="fu">&lt;&lt;</span><span class="dt">double</span><span class="fu">-</span>pendulum<span class="fu">-</span>animation<span class="fu">&gt;&gt;</span></a>
+<a class="sourceLine" id="cb5-19" title="19"><span class="fu">&lt;&lt;</span><span class="dt">double</span><span class="fu">-</span>pendulum<span class="fu">-</span>flare<span class="fu">&gt;&gt;</span></a></code></pre></div>
+</div>
+</div>
+</div>
 </div>
 <script type="text/javascript" src="js/double-pendulum.js"></script>
+<p><br><br></p>
 </div>
 
 </main>

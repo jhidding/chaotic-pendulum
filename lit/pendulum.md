@@ -37,45 +37,73 @@ This document is a rendering of a completely **self-contained Markdown** file.</
 
 -----
 
-This demo shows an interactive model of the chaotic double pendulum, written in PureScript, using Pandoc and Entangled create the static web page. The entire demo runs in your web browser, so no server with Python or R is needed. Since PureScript is not the most well known programming language, I will explain some details about the use of PureScript in a bit more detail. You can recognize these by their blue shade.
+<div class="container-fluid"><div class="row">
+<canvas class="col" id="double-pendulum-output" width="600" height="500" style="background: #eee; border-radius: 10px;"></canvas>
+<!-- <div id="double-pendulum-output"></div> -->
+<div class="col" id="double-pendulum-control"></div>
+</div></div>
+
+-----
+
+This demo shows an interactive model of the chaotic double pendulum, written in PureScript, using Pandoc and Entangled to create the static web page. The entire demo runs in your web browser, so unlike with Python or R no special server is needed, just host from Github pages! Since PureScript is not the most well known programming language, I will explain some details about the use of PureScript in a bit more detail. You can recognize these by their blue shade.
 
 ::: {.alert .alert-info}
 PureScript is a strongly typed functional language similar to Haskell that compiles to JavaScript. It has a highly formal approach to data types that matches really well with the topic of modelling dynamic systems.
+
+Other than that, I have been able to build this demo without great knowledge of JavaScript.
 :::
 
 I understand the danger of explaining two difficult things at once. Non-linear dynamics is a difficult topic and PureScript is a language with high levels of abstraction. I'm hoping you can cherry pick from this demo whatever you're trying to learn.
 
 ## Why we care
 
+I've heard some rumours that people really like Jupyter notebooks and MyBinder. Rightly so! You can show your work to colleages around the world and they don't have to setup anything. People can learn from what you have done because the code is right there! MyBinder has some problems though: it only works with languages that have a Jupyter kernel available. While there are kernels available for languages other than Python, Julia and R, outside those two your options are really limited especially in terms of visualisation. Also MyBinder has been getting slower due to large demands on a free service. The computations are being run on a remote server and one way or another, this costs money.
+
+If you're willing to learn JavaScript, there is the option of writing [Observable notebooks](https://observablehq.com/). Observable is great, but it requires you to work in JavaScript. Also, to my best knowledge Observable is not (yet) open source, so you'll still be relying on an external service to work with your code.
+
+Thirdly, you may not always want an interactive web environment to do your coding in. Coding is hard, and we got used to working with code, runtimes and debuggers from editors, consoles and IDEs. Why change all that? There is a solution where you can mix and match languages, write your story in one or more Markdown files, have your cake and eat it too! This setup is still under development, which is in part why I made this demo.
+
+<div class="container-fluid my-5"><div class="row">
+<div class="col"><div class="jumbotron h-100">
+### Get to see
+
 - Experimental science blogging with live interactive demos
 - How to use Literate Programming to learn and teach
 - See a chaotic double pendulum in action
-
-## Learn some Tech
+</div></div>
+<div class="col"><div class="jumbotron h-100">
+### Get to learn
 
 - Learn some [PureScript](https://purescript.org)
 - See how we can call [PlotLy](https://plotly.com) from PureScript
-- Use the PureScript [Flare library](https://github.com/sharkdp/purescript-flare) to create demos
+- Use the PureScript [Flare library](https://github.com/sharkdp/purescript-flare) to create interactive demos
 - Use Pandoc to create a static [Bootstrap](https://getbootstrap.com) page
 - Use [Entangled](https://entangled.github.io) for literate programming
+</div></div>
+</div></div>
 
 The physics used in this demo assumes some understanding of Lagrangian/Hamiltonian dynamics.
-
 We will first model the time evolution of a simple pendulum, and then extend our model to that of a double pendulum.
+
+## TODO
+
+- Reduce CPU usage when animation is not playing
+- Have a table of contents / navigation
+- Write pandoc filter for collapsable code cells
+- Write pandoc filter for card-deck on top
+- Add footer
 
 # The pendulum
 
-The pendulum still makes the world tick:
+It was found by Christiaan Huygens that a pendulum can make an excelent clock. We assume a solid massless rod suspending a weight of mass $m$ at a length $l$ from the origin. The Lagrangian for such a system (being $\mathcal{L} = T - U$, where $T$ is the kinetic energy and $U$ is the potential energy) is written as
 
-$$\mathcal{L}(t; \theta, \dot{\theta}) = \frac{1}{2}ml^2\dot{\theta}^2 + mgl \cos\theta.$$
+$$\mathcal{L}(\theta, \dot{\theta}) = \frac{1}{2}ml^2\dot{\theta}^2 + mgl \cos\theta.$$
 
 Using the Euler-Lagrange equations, in very terse notation $D_t \partial_{\dot{\theta}} \mathcal{L} = \partial_{\theta} \mathcal{L}$, leads to
 
 $$\ddot{\theta} = -\frac{g}{l} \sin\theta.$$
 
-To solve this, we write down the equation in phase-space using position $\vec{q}(t) = \theta(t)$ and momentum $\vec{p}(t) = D_{\dot{\theta}} \mathcal{L} = ml^2\dot{\theta}(t)$.
-
-And the Hamiltonian becomes
+This is a second order non-linear differential equation. To solve this numerically we write down the equation in phase-space using position $\vec{q}(t) = \theta(t)$ and momentum $\vec{p}(t) = D_{\dot{\theta}} \mathcal{L} = ml^2\dot{\theta}(t)$. This is best done using the Hamiltonian formalism. The Hamiltonian becomes
 
 $$\mathcal{H} = \frac{\vec{p}^2}{2ml^2} - mgl \cos \vec{q}.$$
 
@@ -319,6 +347,7 @@ main = do
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script type="text/javascript" src="js/pendulum.js"></script>
+<br><br>
 
 # The double pendulum
 
@@ -456,20 +485,134 @@ doublePendulum z = { positionEquation, momentumEquation }
 
 Terrible indeed. It is amazing how quickly the addition of another pendulum to the system just explodes in your face.
 
-<!-- <canvas id="double-pendulum-output" width="300" height="300"></canvas> -->
-<div id="double-pendulum-output"></div>
-<div id="double-pendulum-control"></div>
+# Animation using Flare
 
+We have an animation canvas and a button that controls if the animation plays or not. The `Model` is as follows:
+
+``` {.pure #double-pendulum-animation}
+type Model =
+    { state       :: State Coordinates
+    , params      :: DoublePendulum
+    , currentTime :: Number
+    , timeStep    :: Number
+    , playing     :: Boolean }
+```
+
+The model is updated by passing messages to an `update` function.
+
+``` {.pure #double-pendulum-animation}
+data Msg =
+      AnimationFrame Number
+    | TogglePlay
+    | None
+```
+
+Updating the model:
+
+``` {.pure #double-pendulum-animation}
+forwardModel :: Number -> Model -> Model
+forwardModel dt m = m { state = moduloState newState
+                      , currentTime = newTime }
+    where newState = iterateSolution
+            (leapFrog m.timeStep (doublePendulum m.params))
+            (haltAtTime $ m.state.time + dt)
+            m.state
+          newTime = m.currentTime + newState.time - m.state.time
+
+moduloState :: State Coordinates -> State Coordinates
+moduloState s@{ position: Coordinates { theta, phi } } =
+    s { position = Coordinates { theta: theta % (2.0*pi)
+                               , phi: phi % (2.0*pi) } }
+
+update :: Msg -> Model -> Model
+update (AnimationFrame t) m = if (t / 1000.0 - m.currentTime) > m.timeStep
+    then if m.playing
+         then forwardModel (t / 1000.0 - m.currentTime) m
+         else m { currentTime = t / 1000.0 }
+    else m
+update TogglePlay m = m { playing = not m.playing }
+update None m = m
+```
+
+And we use the following initial state:
+
+``` {.pure #double-pendulum-animation}
+initModel :: Model
+initModel =
+    { state:  { position: Coordinates { theta: pi / 2.0, phi: 0.0 }
+              , momentum: Coordinates { theta: 0.0,      phi: 0.0 }
+              , time: 0.0 }
+    , params: { l1: 1.6, l2: 1.2, m1: 2.0, m2: 1.5, g: 9.81 }
+    , currentTime: 0.0
+    , timeStep: 0.01
+    , playing: false }
+```
+
+## Flare
+
+Using `Flare` we can create a set of UI controls that generate a stream of messages. The `events` function takes a `Signal Number` argument that generates a signal for every animation frame.
+
+``` {.pure #double-pendulum-flare}
+events :: Signal.Signal Number -> Flare.UI Msg
+events time = Flare.liftSF (Signal.merge $ AnimationFrame <$> time)
+                           (Flare.button "Play/Pause" None TogglePlay)
+```
+
+In the `main` function we can obtain the animation signal, and pass it to `events`. Using `Flare.foldp` the series of `Msg` messages is converted into a series of `Model` objects. These are then rendered to a canvas in the `draw` function.
+
+``` {.pure #double-pendulum-flare}
+main :: Effect Unit
+main = do
+    time <- animationFrame
+    let model = Flare.foldp update initModel (events time)
+    runFlareDrawing "double-pendulum-control" 
+                    "double-pendulum-output"
+                    (draw <$> model)
+```
+
+## Drawing
+
+``` {.pure #double-pendulum-flare}
+draw :: Model -> Drawing.Drawing
+draw { state:  { position: Coordinates q }
+     , params: { l1, l2, m1, m2 } } =
+    let p1    = { x: l1 * (sin q.theta), y: l1 * (cos q.theta) }
+        p2    = { x: p1.x + l2 * (sin q.phi), y: p1.y + l2 * (cos q.phi) }
+        orig  = { x: 0.0, y: 0.0 }
+        tr {x, y} = { x: x*100.0 + 300.0, y: y*100.0 + 100.0 }
+        rods  = Drawing.outlined 
+                    (Drawing.lineWidth 2.0 <> Drawing.outlineColor (rgb' 0.0 0.0 0.0))
+                    (Drawing.path $ map tr [orig, p1, p2])
+        hinge = Drawing.filled
+                    (Drawing.fillColor (rgb' 0.0 0.0 0.0))
+                    (Drawing.circle (tr orig).x (tr orig).y 3.0)
+        mass1 = Drawing.filled
+                    (Drawing.fillColor (rgb' 0.5 0.0 0.0))
+                    (Drawing.circle (tr p1).x (tr p1).y (m1 * 4.0))
+        mass2 = Drawing.filled
+                    (Drawing.fillColor (rgb' 0.5 0.0 0.0))
+                    (Drawing.circle (tr p2).x (tr p2).y (m2 * 4.0))
+    in Drawing.shadow (Drawing.shadowOffset 2.0 2.0 <> Drawing.shadowBlur 4.0 <> Drawing.shadowColor (rgb' 0.5 0.5 0.5))
+                      (rods <> hinge <> mass1 <> mass2)
+```
+
+## Main
+
+<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#double-pendulum-main" aria-controls="double-pendulum-main">
+&lt;&lt;double-pendulum-main&gt;&gt;=
+</button>
+
+::: {.collapse #double-pendulum-main}
+:::: {.card style="height: 20em"}
+::::: {.overflow-auto}
 ``` {.pure file=src/DoublePendulum.purs}
 module DoublePendulum where
 
 import Prelude
 import Effect (Effect)
-import Math (pow, cos, sin, pi)
+import Math (pow, cos, sin, pi, (%))
 
-import Hamilton ( HamiltonianSystem, State, integrateSystem, leapFrog, haltAtTime
-                , iterateSolution )
--- import Plotting (lineChart)
+import Hamilton ( HamiltonianSystem, State, leapFrog, haltAtTime, iterateSolution )
 
 import Flare as Flare
 import Flare.Drawing (runFlareDrawing)
@@ -480,70 +623,13 @@ import Graphics.Drawing as Drawing
 import Color (rgb')
 
 <<double-pendulum>>
-
-type Model =
-    { state       :: State Coordinates
-    , params      :: DoublePendulum
-    , currentTime :: Number
-    , timeStep    :: Number
-    , playing     :: Boolean }
-
-data Msg =
-      AnimationFrame Number
-    | TogglePlay
-    | None
-
-initModel :: Model
-initModel =
-    { state:  { position: Coordinates { theta: pi / 2.0, phi: 0.0 }
-              , momentum: Coordinates { theta: 0.0,      phi: 0.0 }
-              , time: 0.0 }
-    , params: { l1: 1.0, l2: 1.0, m1: 1.0, m2: 1.0, g: 9.81 }
-    , currentTime: 0.0
-    , timeStep: 0.02
-    , playing: true }
-
-forwardModel :: Number -> Model -> Model
-forwardModel dt m = m { state = newState, currentTime = newTime }
-    where newState = iterateSolution
-            (leapFrog m.timeStep (doublePendulum m.params))
-            (haltAtTime $ m.state.time + dt)
-            m.state
-          newTime = m.currentTime + newState.time - m.state.time
-
-update :: Msg -> Model -> Model
-update (AnimationFrame t) m = if m.playing
-    then forwardModel (t / 1000.0 - m.currentTime) m
-    else m { currentTime = t / 1000.0 }
-update TogglePlay m = m { playing = not m.playing }
-update None m = m
-
-draw :: Model -> Drawing.Drawing
-draw { state:  { position: Coordinates q }
-     , params: { l1, l2 } } =
-    let path = Drawing.path
-            [ { x: 0.0,                y: 0.0 }
-            , { x: l1*100.0 * (sin q.theta), y: l1 * 100.0 * (cos q.theta) }
-            , { x: l1 *100.0* (sin q.theta) + l2 * 100.0 * (sin q.phi)
-              , y: l1 *100.0* (cos q.theta) + l2 * 100.0 * (cos q.phi) } ]
-        style = Drawing.lineWidth 2.0 <> Drawing.outlineColor (rgb' 0.0 0.0 0.0)
-    in Drawing.outlined style path
-
-events :: Signal.Signal Number -> Flare.UI Msg
-events time = Flare.liftSF (Signal.merge $ AnimationFrame <$> time)
-                           (Flare.button "Play" None TogglePlay)
-
-main :: Effect Unit
-main = do
-    time <- animationFrame
-    let model = Flare.foldp update initModel (events time)
-    {- runFlareDrawing "double-pendulum-control" 
-                    "double-pendulum-output"
-                    (draw <$> model) -}
-    Flare.runFlareShow "double-pendulum-control"
-                       "double-pendulum-output"
-                       model
+<<double-pendulum-animation>>
+<<double-pendulum-flare>>
 ```
+:::::
+::::
+:::
 
 <script type="text/javascript" src="js/double-pendulum.js"></script>
+<br><br>
 
