@@ -36,7 +36,7 @@ in [ { title = "Literate Programming"
          This demonstrates some **strongly typed physics**, combining Hamiltonian
          dynamics with the elegant type system of PureScript.
          ''
-     , link = Some { href = "https://purescript.org/"
+     , link = Some { href = "https://www.purescript.org/"
                    , content = "About PureScript" }
      }
    ]
