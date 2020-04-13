@@ -54,20 +54,21 @@ $for(include-before)$
 $include-before$
 $endfor$
 
-<!--$if(toc)$
-<nav id="$idprefix$TOC">
-<a id="logo-container" href="#" class="brand-logo">$title$</a>
+$if(toc)$
+<nav id="$idprefix$TOC" class="navbar navbar-dark bg-dark">
+  <a href="#" class="navbar-brand">$title$<br><span style="font-size: smaller">$subtitle$ by <i>$author$</i></span></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
 $table-of-contents$
-<a href="#" data-target="nav-mobile" class="sidenav-trigger">
-<i class="material-icons">menu</i>
-</a>
+</div>
 </nav>
-$endif$ -->
+$endif$
 
-$if(title)$
+<!-- $if(title)$
 <nav class="navbar navbar-dark navbar-expand-md bg-dark mb-4">
-<a href="#" class="navbar-brand">$title$</a>
-<!--$if(subtitle)$
+$if(subtitle)$
 <p class="subtitle">$subtitle$</p>
 $endif$
 $for(author)$
@@ -75,9 +76,9 @@ $for(author)$
 $endfor$
 $if(date)$
 <p class="date">$date$</p>
-$endif$-->
-</nav>
 $endif$
+</nav>
+$endif$ -->
 
 <main role="main" class="container"><div class="container">
 $body$

@@ -1,39 +1,46 @@
 ---
 title: Chaotic pendulum
+subtitle: a literate programming demo
 author: Johan Hidding
 ---
 
 $\renewcommand{\vec}[1]{{\bf #1}}$
 
-<div class="container-fluid">
-::: {.row}
-:::: {.col}
-<div class="card h-100"><div class="card-body">
-<h3 class="card-title">Literate Programming</h3>
-<p class="card-text">Write prose and code intermixed. Not just some choice snippets: **all code is included!**
-This document is a rendering of a completely **self-contained Markdown** file.</p>
-</div>
-<a href="https://entangled.github.io/" class="btn btn-primary mt-auto mx-4">About Entangled</a>
-</div>
-::::
-:::: {.col}
-<div class="card h-100"><div class="card-body">
-<h3 class="card-title">Build with Pandoc</h3>
-<p class="card-text">Pandoc is the **universal document converter**. This demo is converted from Markdown to a responsive Bootstrap website using Pandoc.</p>
-</div>
-<a href="https://pandoc.org/" class="btn btn-primary mt-auto mx-4">About Pandoc</a>
-</div>
-::::
-:::: {.col}
-<div class="card h-100"><div class="card-body">
-<h3 class="card-title">Strongly typed Physics</h3>
-<p class="card-text">This demonstrates some **strongly typed physics**, combining Hamiltonian dynamics with the elegant type system of PureScript.</p>
-</div>
-<a href="https://purescript.org/" class="btn btn-primary mt-auto mx-4">About PureScript</a>
-</div>
-::::
-:::
-</div>
+``` {.dhall .bootstrap-card-deck}
+let Card = ./schema/Card.dhall
+
+in [ { title = "Literate Programming"
+     , text =
+         ''
+         Write prose and code intermixed. Not just some choice snippets:
+         **all code is included!** This document is a rendering of a completely
+         **self-contained Markdown** file.
+         ''
+     , link = Some { href = "https://entangled.github.io"
+                   , content = "About Entangled" }
+     }
+
+   , { title = "Build with Pandoc"
+     , text =
+         ''
+         Pandoc is the **universal document converter**. This demo is converted
+         from Markdown to a responsive Bootstrap website using Pandoc.
+         ''
+     , link = Some { href = "https://pandoc.org/"
+                   , content = "About Pandoc" }
+     }
+
+   , { title = "Strongly typed Physics"
+     , text =
+         ''
+         This demonstrates some **strongly typed physics**, combining Hamiltonian
+         dynamics with the elegant type system of PureScript.
+         ''
+     , link = Some { href = "https://purescript.org/"
+                   , content = "About PureScript" }
+     }
+   ]
+```
 
 -----
 
@@ -88,9 +95,7 @@ We will first model the time evolution of a simple pendulum, and then extend our
 ## TODO
 
 - Reduce CPU usage when animation is not playing
-- Have a table of contents / navigation
 - Write pandoc filter for collapsable code cells
-- Write pandoc filter for card-deck on top
 - Add footer
 
 # The pendulum
@@ -263,7 +268,7 @@ import Data.Array ((:))
 <<leap-frog>>
 ```
 
-## Integrating the solid pendulum
+## Integrating the single pendulum
 
 We had the following equations of motion,
 
@@ -368,7 +373,7 @@ type DoublePendulum =
         , g  :: Number }
 ```
 
-We describe the pendulum in terms of the coordinates $\theta$ and $\varphi$.
+We describe the pendulum in terms of the coordinates $\theta$ and $\varphi$. Just as we did for the `Scalar` type, we need to define how to map over the `Coordinates` type, meaning we have to create an `Applicative` instance.
 
 ``` {.pure #double-pendulum}
 newtype Coordinates a = Coordinates
@@ -412,7 +417,7 @@ $$B = \begin{pmatrix}
 
 Then we can write the velocities $\dot{\vec{q}} = B^{-1} \vec{p}$. The inverse of a $2\times2$ symmetric matrix is given by
 
-$$\begin{pmatrix}
+$$B^{-1} = \begin{pmatrix}
 a && c \\ c && b\end{pmatrix}^{-1} = \frac{1}{ab - c^2} \begin{pmatrix} b && -c \\ -c && a
 \end{pmatrix}.$$
 
@@ -483,7 +488,7 @@ doublePendulum z = { positionEquation, momentumEquation }
                     c = z.m2 * z.l1 * z.l2 * (mu q)
 ```
 
-Terrible indeed. It is amazing how quickly the addition of another pendulum to the system just explodes in your face.
+Terrible indeed. It is amazing how quickly the addition of another pendulum to the system just explodes in your face. Since we have a `HamiltonianSystem` defined for the double pendulum, integration of this system is the same as integrating the single pendulum. The next section describes how I made the animation at the top of this page.
 
 # Animation using Flare
 

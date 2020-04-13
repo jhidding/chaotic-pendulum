@@ -10,6 +10,18 @@ strong {
         font-weight: 500;
 }
 
+nav ul {
+        color: white;
+}
+
+nav li a {
+        color: white;
+}
+
+nav li a:hover {
+        color: white;
+}
+
 pre.sourceCode {
         background: #eee;
         border-left: thick solid #888;

@@ -1,4 +1,4 @@
--- ------ language="PureScript" file="src/Pendulum.purs" project://lit/pendulum.md#287
+-- ------ language="PureScript" file="src/Pendulum.purs" project://lit/pendulum.md#292
 module Pendulum where
 
 import Prelude
@@ -12,7 +12,7 @@ import Plotting as Plotting
 
 import Flare (runFlareWith, numberSlider)
 
--- ------ begin <<pendulum-model>>[0] project://lit/pendulum.md#117
+-- ------ begin <<pendulum-model>>[0] project://lit/pendulum.md#122
 simplePendulum :: Number -> Number -> HamiltonianSystem Scalar
 simplePendulum g l =
     { positionEquation: (\s -> (\p -> p / pow l 2.0) <$> s.momentum)

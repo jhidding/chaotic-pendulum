@@ -7,9 +7,11 @@ pandoc_args += --template style/template.html
 pandoc_args += --css css/$(framework).css
 pandoc_args += --css css/mods.css
 pandoc_args += -t html5 -s --mathjax --toc
+pandoc_args += --toc-depth 2
 pandoc_args += --syntax-definition style/elm.xml
 pandoc_args += --syntax-definition style/pure.xml
 pandoc_args += --filter pandoc-test
+pandoc_args += --filter pandoc-bootstrap
 
 pendulum_sources = $(shell find src -name '*.purs')
 

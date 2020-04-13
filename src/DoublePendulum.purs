@@ -1,4 +1,4 @@
--- ------ language="PureScript" file="src/DoublePendulum.purs" project://lit/pendulum.md#609
+-- ------ language="PureScript" file="src/DoublePendulum.purs" project://lit/pendulum.md#614
 module DoublePendulum where
 
 import Prelude
@@ -15,7 +15,7 @@ import Signal.DOM (animationFrame)
 import Graphics.Drawing as Drawing
 import Color (rgb')
 
--- ------ begin <<double-pendulum>>[0] project://lit/pendulum.md#363
+-- ------ begin <<double-pendulum>>[0] project://lit/pendulum.md#368
 type DoublePendulum =
         { l1 :: Number
         , m1 :: Number
@@ -23,7 +23,7 @@ type DoublePendulum =
         , m2 :: Number
         , g  :: Number }
 -- ------ end
--- ------ begin <<double-pendulum>>[1] project://lit/pendulum.md#374
+-- ------ begin <<double-pendulum>>[1] project://lit/pendulum.md#379
 newtype Coordinates a = Coordinates
         { theta :: a
         , phi   :: a }
@@ -43,7 +43,7 @@ instance applicativeCoordinates :: Applicative Coordinates where
 instance showCoordinates :: Show a => Show (Coordinates a) where
     show (Coordinates x) = show x
 -- ------ end
--- ------ begin <<double-pendulum>>[2] project://lit/pendulum.md#430
+-- ------ begin <<double-pendulum>>[2] project://lit/pendulum.md#435
 kineticEnergy :: DoublePendulum -> Coordinates Number -> Coordinates Number -> Number
 kineticEnergy z (Coordinates q) (Coordinates p) =
     (b * (pow p.theta 2.0) + a * (pow p.phi 2.0) - 2.0 * c * p.theta * p.phi) / (2.0 * det)
@@ -52,7 +52,7 @@ kineticEnergy z (Coordinates q) (Coordinates p) =
           c = z.m2 * z.l1 * z.l2 * (cos $ q.theta - q.phi)
           det = a * b - c * c
 -- ------ end
--- ------ begin <<double-pendulum>>[3] project://lit/pendulum.md#460
+-- ------ begin <<double-pendulum>>[3] project://lit/pendulum.md#465
 doublePendulum :: DoublePendulum -> HamiltonianSystem Coordinates
 doublePendulum z = { positionEquation, momentumEquation }
     where positionEquation { position: Coordinates q, momentum: Coordinates p } = 
@@ -78,7 +78,7 @@ doublePendulum z = { positionEquation, momentumEquation }
                     b = z.m2 * (pow z.l2 2.0)
                     c = z.m2 * z.l1 * z.l2 * (mu q)
 -- ------ end
--- ------ begin <<double-pendulum-animation>>[0] project://lit/pendulum.md#493
+-- ------ begin <<double-pendulum-animation>>[0] project://lit/pendulum.md#498
 type Model =
     { state       :: State Coordinates
     , params      :: DoublePendulum
@@ -86,13 +86,13 @@ type Model =
     , timeStep    :: Number
     , playing     :: Boolean }
 -- ------ end
--- ------ begin <<double-pendulum-animation>>[1] project://lit/pendulum.md#504
+-- ------ begin <<double-pendulum-animation>>[1] project://lit/pendulum.md#509
 data Msg =
       AnimationFrame Number
     | TogglePlay
     | None
 -- ------ end
--- ------ begin <<double-pendulum-animation>>[2] project://lit/pendulum.md#513
+-- ------ begin <<double-pendulum-animation>>[2] project://lit/pendulum.md#518
 forwardModel :: Number -> Model -> Model
 forwardModel dt m = m { state = moduloState newState
                       , currentTime = newTime }
@@ -116,7 +116,7 @@ update (AnimationFrame t) m = if (t / 1000.0 - m.currentTime) > m.timeStep
 update TogglePlay m = m { playing = not m.playing }
 update None m = m
 -- ------ end
--- ------ begin <<double-pendulum-animation>>[3] project://lit/pendulum.md#540
+-- ------ begin <<double-pendulum-animation>>[3] project://lit/pendulum.md#545
 initModel :: Model
 initModel =
     { state:  { position: Coordinates { theta: pi / 2.0, phi: 0.0 }
@@ -127,12 +127,12 @@ initModel =
     , timeStep: 0.01
     , playing: false }
 -- ------ end
--- ------ begin <<double-pendulum-flare>>[0] project://lit/pendulum.md#556
+-- ------ begin <<double-pendulum-flare>>[0] project://lit/pendulum.md#561
 events :: Signal.Signal Number -> Flare.UI Msg
 events time = Flare.liftSF (Signal.merge $ AnimationFrame <$> time)
                            (Flare.button "Play/Pause" None TogglePlay)
 -- ------ end
--- ------ begin <<double-pendulum-flare>>[1] project://lit/pendulum.md#564
+-- ------ begin <<double-pendulum-flare>>[1] project://lit/pendulum.md#569
 main :: Effect Unit
 main = do
     time <- animationFrame
@@ -141,7 +141,7 @@ main = do
                     "double-pendulum-output"
                     (draw <$> model)
 -- ------ end
--- ------ begin <<double-pendulum-flare>>[2] project://lit/pendulum.md#576
+-- ------ begin <<double-pendulum-flare>>[2] project://lit/pendulum.md#581
 draw :: Model -> Drawing.Drawing
 draw { state:  { position: Coordinates q }
      , params: { l1, l2, m1, m2 } } =
