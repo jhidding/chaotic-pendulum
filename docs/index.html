@@ -165,7 +165,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="row">
 <canvas class="col" id="double-pendulum-output" width="600" height="500" style="background: #eee; border-radius: 10px;">
 </canvas>
-<!-- <div id="double-pendulum-output"></div> -->
 <div id="double-pendulum-control" class="col">
 
 </div>
@@ -212,7 +211,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 id="todo">TODO</h2>
 <ul>
 <li>Reduce CPU usage when animation is not playing</li>
-<li>Write pandoc filter for collapsable code cells</li>
 <li>Add footer</li>
 </ul>
 <h1 id="the-pendulum">The pendulum</h1>
@@ -364,15 +362,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </figure>
 <p>The source code for this interactive plot can be expanded below.</p>
-<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#pendulum-main" aria-controls="pendulum-main">
-&lt;&lt;pendulum-main&gt;&gt;=
-</button>
-<div id="pendulum-main" class="collapse">
-<div class="card" style="height: 20em">
-<div class="overflow-auto">
-<div class="annotated-code">
-<p><span><em>«src/Pendulum.purs»=</em></span></p>
-<div class="sourceCode" id="cb4" data-file="src/Pendulum.purs"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="cb4-1" title="1">module <span class="dt">Pendulum</span> where</a>
+<div>
+<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#src-slash-Pendulum-dot-purs-container" aria-controls="src-slash-Pendulum-dot-purs-container">&lt;&lt;src/Pendulum.purs&gt;&gt;=</button>
+<div id="src-slash-Pendulum-dot-purs-container" class="collapse">
+<div class="sourceCode" id="cb4" data-file="src/Pendulum.purs" style="max-height: 50vh"><pre class="sourceCode pure bootstrap-fold overflow-auto"><code class="sourceCode pure"><a class="sourceLine" id="cb4-1" title="1">module <span class="dt">Pendulum</span> where</a>
 <a class="sourceLine" id="cb4-2" title="2"></a>
 <a class="sourceLine" id="cb4-3" title="3">import <span class="dt">Prelude</span></a>
 <a class="sourceLine" id="cb4-4" title="4"></a>
@@ -428,8 +421,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb4-54" title="54"></a>
 <a class="sourceLine" id="cb4-55" title="55">    <span class="dt">Plotting</span><span class="fu">.</span>lineChart <span class="st">&quot;pendulum-plot&quot;</span> [convertResult result, smallAngle initModel] { title<span class="fu">:</span> <span class="st">&quot;pendulum&quot;</span> }</a>
 <a class="sourceLine" id="cb4-56" title="56">    runFlareWith <span class="st">&quot;pendulum-control&quot;</span> updatePlot slider</a></code></pre></div>
-</div>
-</div>
 </div>
 </div>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -647,15 +638,10 @@ a &amp;&amp; c \\ c &amp;&amp; b\end{pmatrix}^{-1} = \frac{1}{ab - c^2} \begin{p
 <a class="sourceLine" id="double-pendulum-flare-21" title="21">                      (rods <span class="fu">&lt;&gt;</span> hinge <span class="fu">&lt;&gt;</span> mass1 <span class="fu">&lt;&gt;</span> mass2)</a></code></pre></div>
 </div>
 <h2 id="main">Main</h2>
-<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#double-pendulum-main" aria-controls="double-pendulum-main">
-&lt;&lt;double-pendulum-main&gt;&gt;=
-</button>
-<div id="double-pendulum-main" class="collapse">
-<div class="card" style="height: 20em">
-<div class="overflow-auto">
-<div class="annotated-code">
-<p><span><em>«src/DoublePendulum.purs»=</em></span></p>
-<div class="sourceCode" id="cb5" data-file="src/DoublePendulum.purs"><pre class="sourceCode pure"><code class="sourceCode pure"><a class="sourceLine" id="cb5-1" title="1">module <span class="dt">DoublePendulum</span> where</a>
+<div>
+<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#src-slash-DoublePendulum-dot-purs-container" aria-controls="src-slash-DoublePendulum-dot-purs-container">&lt;&lt;src/DoublePendulum.purs&gt;&gt;=</button>
+<div id="src-slash-DoublePendulum-dot-purs-container" class="collapse">
+<div class="sourceCode" id="cb5" data-file="src/DoublePendulum.purs" style="max-height: 50vh"><pre class="sourceCode pure bootstrap-fold overflow-auto"><code class="sourceCode pure"><a class="sourceLine" id="cb5-1" title="1">module <span class="dt">DoublePendulum</span> where</a>
 <a class="sourceLine" id="cb5-2" title="2"></a>
 <a class="sourceLine" id="cb5-3" title="3">import <span class="dt">Prelude</span></a>
 <a class="sourceLine" id="cb5-4" title="4">import <span class="dt">Effect</span> (<span class="dt">Effect</span>)</a>
@@ -674,8 +660,6 @@ a &amp;&amp; c \\ c &amp;&amp; b\end{pmatrix}^{-1} = \frac{1}{ab - c^2} \begin{p
 <a class="sourceLine" id="cb5-17" title="17"><span class="fu">&lt;&lt;</span><span class="dt">double</span><span class="fu">-</span>pendulum<span class="fu">&gt;&gt;</span></a>
 <a class="sourceLine" id="cb5-18" title="18"><span class="fu">&lt;&lt;</span><span class="dt">double</span><span class="fu">-</span>pendulum<span class="fu">-</span>animation<span class="fu">&gt;&gt;</span></a>
 <a class="sourceLine" id="cb5-19" title="19"><span class="fu">&lt;&lt;</span><span class="dt">double</span><span class="fu">-</span>pendulum<span class="fu">-</span>flare<span class="fu">&gt;&gt;</span></a></code></pre></div>
-</div>
-</div>
 </div>
 </div>
 <script type="text/javascript" src="js/double-pendulum.js"></script>

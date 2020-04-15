@@ -1,10 +1,10 @@
--- ------ language="PureScript" file="src/Hamilton.purs" project://lit/pendulum.md#263
+-- ------ language="PureScript" file="src/Hamilton.purs" project://lit/pendulum.md#261
 module Hamilton where
 
 import Prelude
 import Data.Array ((:))
 
--- ------ begin <<leap-frog>>[0] project://lit/pendulum.md#140
+-- ------ begin <<leap-frog>>[0] project://lit/pendulum.md#138
 newtype Scalar a = Scalar a
 
 instance scalarFunctor :: Functor Scalar where
@@ -16,21 +16,21 @@ instance scalarApply :: Apply Scalar where
 instance scalarApplicative :: Applicative Scalar where
     pure a = Scalar a
 -- ------ end
--- ------ begin <<leap-frog>>[1] project://lit/pendulum.md#171
+-- ------ begin <<leap-frog>>[1] project://lit/pendulum.md#169
 type State a =
     { time :: Number
     , position :: a Number
     , momentum :: a Number }
 -- ------ end
--- ------ begin <<leap-frog>>[2] project://lit/pendulum.md#180
+-- ------ begin <<leap-frog>>[2] project://lit/pendulum.md#178
 type HamiltonianSystem a =
     { positionEquation :: State a -> a Number
     , momentumEquation :: State a -> a Number }
 -- ------ end
--- ------ begin <<leap-frog>>[3] project://lit/pendulum.md#188
+-- ------ begin <<leap-frog>>[3] project://lit/pendulum.md#186
 type Solver a = HamiltonianSystem a -> State a -> State a
 -- ------ end
--- ------ begin <<leap-frog>>[4] project://lit/pendulum.md#194
+-- ------ begin <<leap-frog>>[4] project://lit/pendulum.md#192
 kick :: forall f. (Apply f) 
     => Number -> HamiltonianSystem f -> State f -> State f
 kick dt system state = state
@@ -38,7 +38,7 @@ kick dt system state = state
                <$> state.momentum
                <*> system.momentumEquation state }
 -- ------ end
--- ------ begin <<leap-frog>>[5] project://lit/pendulum.md#205
+-- ------ begin <<leap-frog>>[5] project://lit/pendulum.md#203
 drift :: forall f. (Apply f)
     => Number -> HamiltonianSystem f -> State f -> State f
 drift dt system state = state
@@ -46,23 +46,23 @@ drift dt system state = state
                <$> state.position
                <*> system.positionEquation state }
 -- ------ end
--- ------ begin <<leap-frog>>[6] project://lit/pendulum.md#220
+-- ------ begin <<leap-frog>>[6] project://lit/pendulum.md#218
 wait :: forall a. Number -> State a -> State a
 wait dt state = state
     { time = state.time + dt }
 -- ------ end
--- ------ begin <<leap-frog>>[7] project://lit/pendulum.md#228
+-- ------ begin <<leap-frog>>[7] project://lit/pendulum.md#226
 leapFrog :: forall f. (Apply f)
     => Number -> HamiltonianSystem f -> State f -> State f
 leapFrog dt s = kick dt s >>> wait (dt/2.0) >>> drift dt s >>> wait (dt/2.0)
 -- ------ end
--- ------ begin <<leap-frog>>[8] project://lit/pendulum.md#236
+-- ------ begin <<leap-frog>>[8] project://lit/pendulum.md#234
 type HaltingCondition a = State a -> State a -> Boolean
 
 haltAtTime :: forall a. Number -> HaltingCondition a
 haltAtTime t s1 s2 = s2.time >= t 
 -- ------ end
--- ------ begin <<leap-frog>>[9] project://lit/pendulum.md#245
+-- ------ begin <<leap-frog>>[9] project://lit/pendulum.md#243
 iterateSolution :: forall a.
     (State a -> State a) -> HaltingCondition a -> State a -> State a
 iterateSolution method halt init =

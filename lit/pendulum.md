@@ -46,7 +46,6 @@ in [ { title = "Literate Programming"
 
 <div class="container-fluid"><div class="row">
 <canvas class="col" id="double-pendulum-output" width="600" height="500" style="background: #eee; border-radius: 10px;"></canvas>
-<!-- <div id="double-pendulum-output"></div> -->
 <div class="col" id="double-pendulum-control"></div>
 </div></div>
 
@@ -95,7 +94,6 @@ We will first model the time evolution of a simple pendulum, and then extend our
 ## TODO
 
 - Reduce CPU usage when animation is not playing
-- Write pandoc filter for collapsable code cells
 - Add footer
 
 # The pendulum
@@ -281,14 +279,7 @@ Integrating this gives the time evolution of pendulum. We can compare it with th
 
 The source code for this interactive plot can be expanded below.
 
-<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#pendulum-main" aria-controls="pendulum-main">
-&lt;&lt;pendulum-main&gt;&gt;=
-</button>
-
-::: {.collapse #pendulum-main}
-:::: {.card style="height: 20em"}
-::::: {.overflow-auto}
-``` {.pure file=src/Pendulum.purs}
+``` {.pure file=src/Pendulum.purs .bootstrap-fold}
 module Pendulum where
 
 import Prelude
@@ -346,9 +337,6 @@ main = do
     Plotting.lineChart "pendulum-plot" [convertResult result, smallAngle initModel] { title: "pendulum" }
     runFlareWith "pendulum-control" updatePlot slider
 ```
-:::::
-::::
-:::
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script type="text/javascript" src="js/pendulum.js"></script>
@@ -603,14 +591,7 @@ draw { state:  { position: Coordinates q }
 
 ## Main
 
-<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#double-pendulum-main" aria-controls="double-pendulum-main">
-&lt;&lt;double-pendulum-main&gt;&gt;=
-</button>
-
-::: {.collapse #double-pendulum-main}
-:::: {.card style="height: 20em"}
-::::: {.overflow-auto}
-``` {.pure file=src/DoublePendulum.purs}
+``` {.pure file=src/DoublePendulum.purs .bootstrap-fold}
 module DoublePendulum where
 
 import Prelude
@@ -631,9 +612,6 @@ import Color (rgb')
 <<double-pendulum-animation>>
 <<double-pendulum-flare>>
 ```
-:::::
-::::
-:::
 
 <script type="text/javascript" src="js/double-pendulum.js"></script>
 <br><br>
