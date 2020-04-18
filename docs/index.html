@@ -90,13 +90,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 </head>
-<body>
+<body class="d-flex flex-column">
 
 <nav id="TOC" class="navbar navbar-dark bg-dark">
-  <a href="#" class="navbar-brand">Chaotic pendulum<br><span style="font-size: smaller">a literate programming demo by <i>Johan Hidding</i></span></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+  <a href="#" class="ml-5 mr-auto navbar-brand">Chaotic pendulum<br><span style="font-size: smaller">a literate programming demo by <i>Johan Hidding</i></span></a>
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
 <ul>
 <li><a href="#why-we-care">Why we care</a></li>
@@ -121,41 +121,41 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </nav>
  -->
 
-<main role="main" class="container"><div class="container">
+<main role="main" class="flex-fill"><div class="container my-5">
 <p><span class="math inline">\(\renewcommand{\vec}[1]{{\bf #1}}\)</span></p>
-<div class="container-fluid">
+<div class="container-fluid my-4">
 <div class="row">
 <div class="col">
-<div class="card h-100">
-<div class="card-body">
+<div class="card h-100 rounded-lg">
+<div class="card-body d-flex flex-column">
 <h3 class="card-title">Literate Programming</h3>
 <div class="card-text">
 <p>Write prose and code intermixed. Not just some choice snippets: <strong>all code is included!</strong> This document is a rendering of a completely <strong>self-contained Markdown</strong> file.</p>
 </div>
+<a href="https://entangled.github.io" class="btn btn-secondary mt-auto mx-4">About Entangled</a>
 </div>
-<a href="https://entangled.github.io" class="btn btn-primary mt-auto mx-4">About Entangled</a>
 </div>
 </div>
 <div class="col">
-<div class="card h-100">
-<div class="card-body">
+<div class="card h-100 rounded-lg">
+<div class="card-body d-flex flex-column">
 <h3 class="card-title">Build with Pandoc</h3>
 <div class="card-text">
 <p>Pandoc is the <strong>universal document converter</strong>. This demo is converted from Markdown to a responsive Bootstrap website using Pandoc.</p>
 </div>
+<a href="https://pandoc.org/" class="btn btn-secondary mt-auto mx-4">About Pandoc</a>
 </div>
-<a href="https://pandoc.org/" class="btn btn-primary mt-auto mx-4">About Pandoc</a>
 </div>
 </div>
 <div class="col">
-<div class="card h-100">
-<div class="card-body">
+<div class="card h-100 rounded-lg">
+<div class="card-body d-flex flex-column">
 <h3 class="card-title">Strongly typed Physics</h3>
 <div class="card-text">
 <p>This demonstrates some <strong>strongly typed physics</strong>, combining Hamiltonian dynamics with the elegant type system of PureScript.</p>
 </div>
+<a href="https://www.purescript.org/" class="btn btn-secondary mt-auto mx-4">About PureScript</a>
 </div>
-<a href="https://www.purescript.org/" class="btn btn-primary mt-auto mx-4">About PureScript</a>
 </div>
 </div>
 </div>
@@ -211,7 +211,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 id="todo">TODO</h2>
 <ul>
 <li>Reduce CPU usage when animation is not playing</li>
-<li>Add footer</li>
+<li>PlotLy doesn’t always load</li>
 </ul>
 <h1 id="the-pendulum">The pendulum</h1>
 <p>It was found by Christiaan Huygens that a pendulum can make an excelent clock. We assume a solid massless rod suspending a weight of mass <span class="math inline">\(m\)</span> at a length <span class="math inline">\(l\)</span> from the origin. The Lagrangian for such a system (being <span class="math inline">\(\mathcal{L} = T - U\)</span>, where <span class="math inline">\(T\)</span> is the kinetic energy and <span class="math inline">\(U\)</span> is the potential energy) is written as</p>
@@ -664,9 +664,12 @@ a &amp;&amp; c \\ c &amp;&amp; b\end{pmatrix}^{-1} = \frac{1}{ab - c^2} \begin{p
 </div>
 <script type="text/javascript" src="js/double-pendulum.js"></script>
 <p><br><br></p>
-</div>
+</div></main>
 
-</main>
+<footer class="py-4 bg-dark text-white-50 footer"><div class="container">
+2020-04-18 — version 1.0.0<br />
+Generated with the <a href="https://entangled.github.io/bootstrap">Entangled Bootstrap Template</a>, Powered by <a href="https://entangled.github.io/">Entangled</a>.
+</div></footer>
 
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>

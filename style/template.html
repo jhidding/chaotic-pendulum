@@ -49,17 +49,17 @@ $endfor$
 
 
 </head>
-<body>
+<body class="d-flex flex-column">
 $for(include-before)$
 $include-before$
 $endfor$
 
 $if(toc)$
 <nav id="$idprefix$TOC" class="navbar navbar-dark bg-dark">
-  <a href="#" class="navbar-brand">$title$<br><span style="font-size: smaller">$subtitle$ by <i>$author$</i></span></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+  <a href="#" class="ml-5 mr-auto navbar-brand">$title$<br><span style="font-size: smaller">$subtitle$ by <i>$author$</i></span></a>
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
 $table-of-contents$
 </div>
@@ -80,11 +80,15 @@ $endif$
 </nav>
 $endif$ -->
 
-<main role="main" class="container"><div class="container">
+<main role="main" class="flex-fill"><div class="container my-5">
 $body$
-</div>
+</div></main>
 
-</main>
+$if(footer)$
+<footer class="py-4 bg-dark text-white-50 footer"><div class="container">
+$footer$
+</div></footer>
+$endif$
 
 $for(include-after)$
 $include-after$

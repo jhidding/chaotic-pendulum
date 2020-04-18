@@ -2,6 +2,8 @@
 title: Chaotic pendulum
 subtitle: a literate programming demo
 author: Johan Hidding
+version: 1.0.0
+footer: Generated with the [Entangled Bootstrap Template](https://entangled.github.io/bootstrap), Powered by [Entangled](https://entangled.github.io/).
 ---
 
 $\renewcommand{\vec}[1]{{\bf #1}}$
@@ -94,7 +96,7 @@ We will first model the time evolution of a simple pendulum, and then extend our
 ## TODO
 
 - Reduce CPU usage when animation is not playing
-- Add footer
+- PlotLy doesn't always load
 
 # The pendulum
 
